@@ -1,6 +1,6 @@
 # CrewFlow Backend Requirements
 
-## Phase 1: Backend Foundation (Active)
+## Phase 1: Backend Foundation (Completed)
 - [x] Node.js + TypeScript (strict mode) initialization
 - [x] Fastify web framework setup
 - [x] Zod environment variable validation (`.env.example`)
@@ -16,11 +16,36 @@
 - [x] Automated testing suite with Vitest
 - [x] Developer tooling: ESLint, Prettier, scripts (`dev`, `build`, `start`, `test`, `lint`, `format`)
 
-## Future Phases
-- Phase 2: Users & Workspaces (Supabase Auth integration, multi-tenancy)
-- Phase 3: Projects & Task Graph (Dependency-aware task breakdown and orchestration)
-- Phase 4: Agents & Execution Runtime (OpenCode runtime integration)
-- Phase 5: Switch Collaboration Protocol & Real-time WebSockets
-- Phase 6: Human Approvals & Verification Gateways
-- Phase 7: Persistent Project Intelligence & Memory System
+## Phase 2: Database Architecture & Data Models (Completed)
+- [x] 14 Relational PostgreSQL Prisma Models:
+  - User, Workspace, WorkspaceMember
+  - Project
+  - Task, TaskDependency
+  - Agent
+  - Conversation, Message
+  - Decision
+  - Approval
+  - Execution, ExecutionEvent
+  - MemoryEntry
+- [x] Explicit Enums:
+  - `WorkspaceRole`, `ProjectStatus`, `TaskStatus`, `TaskPriority`, `AgentRole`, `AgentStatus`, `MessageSenderType`, `ApprovalStatus`, `ExecutionStatus`, `MemoryCategory`
+- [x] Database Constraints & Integrity:
+  - Single assignee constraint (human OR agent, not both)
+  - Self-dependency prohibition & cross-project dependency prohibition
+  - DFS-based multi-step DAG cycle detection
+  - Composite indexes on high-frequency query paths
+  - Safe cascading and set-null referential actions
+- [x] PostgreSQL Migration DDL (`prisma/migrations/20261106_init_phase2_models/migration.sql`)
+- [x] Application-level Database Access Layer (`src/database/`):
+  - Typed models, error code translation (P2002 -> Conflict, P2025 -> NotFound, etc.)
+- [x] Zod Data Validation Schemas (`src/common/validation/`)
+- [x] Comprehensive Test Suite covering validators, errors, schemas, and structure
+- [x] Comprehensive Database Documentation (`docs/database.md`)
 
+## Future Phases
+- Phase 3: Users & Workspaces API (Supabase Auth integration, multi-tenancy)
+- Phase 4: Projects & Task Graph Engine (Dependency DAG execution & state machines)
+- Phase 5: Specialist Agents & OpenCode Runtime Integration
+- Phase 6: Switch Collaboration Protocol & Real-time WebSockets
+- Phase 7: Human Approval Gateways & Verifiable Execution
+- Phase 8: Persistent Project Intelligence & Memory Retrieval

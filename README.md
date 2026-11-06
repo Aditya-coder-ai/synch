@@ -30,7 +30,7 @@ Completion   ◄──   Verification   ◄──  Human Approval  ◄──   E
 CrewFlow is built as a **modular monolith** with strict separation of concerns:
 - **Routing & Controllers**: Fastify route definitions handling HTTP contracts and input validation.
 - **Business Logic Services**: Dedicated services containing pure domain logic without HTTP or DB couplings.
-- **Database Access**: Prisma ORM with Supabase PostgreSQL, supporting connection pooling for runtime queries and direct connections for migrations.
+- **Database Access Layer**: Prisma ORM with Supabase PostgreSQL, typed domain models, centralized error translation, and DAG cycle detectors.
 - **Cross-Cutting Concerns**: Centralized error mapping, request logging with sensitive field redaction, and Zod type-safe validation.
 
 ### Directory Structure
@@ -43,9 +43,14 @@ src/
 ├── common/
 │   ├── errors/            # AppError hierarchy, error codes & centralized error handler
 │   ├── types/             # Standardized API response contracts
-│   └── utils/             # Response helper functions
+│   ├── utils/             # Response helper functions
+│   └── validation/        # Zod input schemas for Workspaces, Projects, Tasks, etc.
 ├── database/
-│   └── prisma.ts          # Reusable Prisma client & database health checks
+│   ├── index.ts           # Central database exports
+│   ├── prisma.ts          # Reusable Prisma client & database health checks
+│   ├── types.ts           # Domain models and enum definitions
+│   ├── errors.ts          # Prisma error code mapper (P2002 -> Conflict, P2025 -> NotFound)
+│   └── validators.ts      # DAG cycle detector & assignment rule validators
 └── modules/
     └── health/            # Liveness and readiness monitoring module
         ├── health.schema.ts
@@ -53,18 +58,47 @@ src/
         └── health.routes.ts
 
 prisma/
-└── schema.prisma          # Supabase PostgreSQL datasource definition
+├── schema.prisma          # Supabase PostgreSQL relational schema definition
+└── migrations/            # Version-controlled SQL migrations for Supabase
 
 tests/
-├── env.test.ts            # Environment parsing & validation tests
-├── errors.test.ts         # Centralized error handler & 404 tests
-├── health.test.ts         # Health and readiness probe tests
-└── swagger.test.ts        # OpenAPI schema & Swagger UI tests
+├── env.test.ts                 # Environment parsing & validation tests
+├── errors.test.ts              # Centralized error handler & 404 tests
+├── health.test.ts              # Health and readiness probe tests
+├── swagger.test.ts             # OpenAPI schema & Swagger UI tests
+├── database-validators.test.ts # Task assignment & DAG cycle detection tests
+├── database-errors.test.ts     # Prisma code mapping to AppErrors tests
+├── validation-schemas.test.ts  # Zod schema validation tests
+└── schema-structure.test.ts    # Prisma schema & migration file structure tests
 ```
 
 ---
 
-## 3. Prerequisites
+## 3. Database Architecture & Data Models (Phase 2)
+
+See [`docs/database.md`](file:///docs/database.md) for the full architectural specification, ER diagram, and deletion rules.
+
+### Implemented Models
+- **Users & Workspaces**: `User`, `Workspace`, `WorkspaceMember` (Roles: `OWNER`, `ADMIN`, `MEMBER`)
+- **Projects**: `Project` (Statuses: `PLANNING`, `ACTIVE`, `PAUSED`, `COMPLETED`, `ARCHIVED`)
+- **Tasks & Dependencies**: `Task` (Statuses: `BACKLOG`, `TODO`, `IN_PROGRESS`, `IN_REVIEW`, `BLOCKED`, `COMPLETED`, `CANCELLED`; Priorities: `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`), `TaskDependency`
+- **Agents**: `Agent` (Roles: `COORDINATOR`, `DEVELOPER`, `QA`, `REVIEWER`; Statuses: `ACTIVE`, `IDLE`, `BUSY`, `PAUSED`, `ERROR`, `OFFLINE`)
+- **Conversations & Messages**: `Conversation`, `Message` (Senders: `HUMAN`, `AGENT`, `SYSTEM`)
+- **Decisions**: `Decision` (Project-level persistent decision rationale)
+- **Approvals**: `Approval` (Statuses: `PENDING`, `APPROVED`, `REJECTED`, `EXPIRED`, `CANCELLED`)
+- **Execution Tracking**: `Execution` (Statuses: `QUEUED`, `RUNNING`, `SUCCEEDED`, `FAILED`, `CANCELLED`, `AWAITING_APPROVAL`), `ExecutionEvent` (append-only log)
+- **Persistent Memory**: `MemoryEntry` (Categories: `PROJECT_CONTEXT`, `USER_PREFERENCE`, `DECISION`, `TECHNICAL_KNOWLEDGE`, `TASK_CONTEXT`, `LESSON_LEARNED`)
+
+### Key Invariants & Safeguards
+1. **Single Assignee Invariant**: A task can be assigned to a human (`assignedUserId`) OR an AI agent (`assignedAgentId`), but **never both simultaneously**.
+2. **Self-Dependency Prohibition**: A task cannot depend on itself (`taskId != dependsOnTaskId`).
+3. **Cross-Project Dependency Prohibition**: Dependencies across different projects are disallowed.
+4. **DAG Cycle Prevention**: Multi-step cycles (A → B → C → A) are detected using application-level Depth-First Search (`detectDependencyCycle`).
+5. **Secret Redaction**: Agent configurations strictly forbid storing secrets, API keys, or passwords.
+
+---
+
+## 4. Prerequisites
 
 - **Node.js**: `v20+` (tested on Node `v24.x`)
 - **Package Manager**: `npm`
@@ -72,7 +106,7 @@ tests/
 
 ---
 
-## 4. Installation
+## 5. Installation
 
 Clone the repository and install dependencies:
 
@@ -82,7 +116,7 @@ npm install
 
 ---
 
-## 5. Environment Configuration
+## 6. Environment Configuration
 
 Copy the example environment file and configure your values:
 
@@ -100,16 +134,18 @@ cp .env.example .env
 | `LOG_LEVEL` | `enum` | `info` | Logger severity (`fatal`, `error`, `warn`, `info`, `debug`, `trace`, `silent`) |
 | `CORS_ORIGIN` | `string` | `*` | Allowed CORS origins (comma-separated or `*`) |
 | `BODY_LIMIT` | `number` | `1048576` | Maximum request body limit in bytes (1MB) |
-| `DATABASE_URL` | `string` | *(optional)* | Supabase pooled connection string (port 6543) |
-| `DIRECT_URL` | `string` | *(optional)* | Supabase direct connection string (port 5432) for migrations |
+| `DATABASE_URL` | `string` | *(optional)* | Supabase pooled connection string (port 6543) for runtime queries |
+| `DIRECT_URL` | `string` | *(optional)* | Supabase direct connection string (port 5432) for Prisma migrations |
 
 ---
 
-## 6. Database Setup
+## 7. Database Setup & Migrations
 
 1. Configure `DATABASE_URL` and `DIRECT_URL` in your `.env` file with your Supabase credentials:
    ```env
+   # Transaction pooling (runtime)
    DATABASE_URL="postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true"
+   # Direct connection (migrations)
    DIRECT_URL="postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:5432/postgres"
    ```
 
@@ -118,14 +154,14 @@ cp .env.example .env
    npm run prisma:generate
    ```
 
-3. Run migrations:
+3. Run migrations on Supabase:
    ```bash
    npm run prisma:migrate
    ```
 
 ---
 
-## 7. Development Commands
+## 8. Development Commands
 
 | Command | Action |
 |---|---|
@@ -139,7 +175,7 @@ cp .env.example .env
 
 ---
 
-## 8. Testing Commands
+## 9. Testing Commands
 
 All unit and integration tests are powered by **Vitest**:
 
@@ -156,88 +192,15 @@ npm run test:coverage
 
 ---
 
-## 9. API Documentation
+## 10. API Documentation
 
 Interactive Swagger OpenAPI 3.0 documentation is automatically generated and accessible in your browser:
 
 - **Swagger UI**: [http://localhost:3000/docs](http://localhost:3000/docs)
 - **OpenAPI JSON**: [http://localhost:3000/docs/json](http://localhost:3000/docs/json)
 
-### Available Endpoints (Phase 1)
-
-#### 1. Liveness Probe
-```http
-GET /api/v1/health
-```
-**Response (200 OK):**
-```json
-{
-  "success": true,
-  "data": {
-    "status": "ok",
-    "appName": "CrewFlow Backend",
-    "version": "0.1.0",
-    "environment": "development",
-    "timestamp": "2026-11-06T13:40:00.000Z",
-    "uptimeSeconds": 42
-  }
-}
-```
-
-#### 2. Readiness Probe
-```http
-GET /api/v1/health/ready
-```
-**Response (200 OK - Database Healthy):**
-```json
-{
-  "success": true,
-  "data": {
-    "status": "ready",
-    "checks": {
-      "database": {
-        "status": "up",
-        "latencyMs": 8
-      }
-    },
-    "timestamp": "2026-11-06T13:40:00.000Z"
-  }
-}
-```
-**Response (503 Service Unavailable - Database Unreachable):**
-```json
-{
-  "success": false,
-  "data": {
-    "status": "not_ready",
-    "checks": {
-      "database": {
-        "status": "down",
-        "error": "Database connection failed"
-      }
-    },
-    "timestamp": "2026-11-06T13:40:00.000Z"
-  }
-}
-```
-
-#### 3. Standardized Error Response Format
-All errors return uniform envelopes:
-```json
-{
-  "success": false,
-  "error": {
-    "code": "NOT_FOUND",
-    "message": "Route GET /api/v1/unknown not found"
-  },
-  "timestamp": "2026-11-06T13:40:00.000Z",
-  "path": "/api/v1/unknown"
-}
-```
-
 ---
 
-## 10. License
+## 11. License
 
 UNLICENSED - Proprietary to CrewFlow.
-
