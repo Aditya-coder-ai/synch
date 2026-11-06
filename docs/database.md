@@ -140,3 +140,4 @@ npm run prisma:generate
 1. **Switch Protocol**: `Conversation.externalRoomId` bridges Fastify to external Switch collaboration rooms.
 2. **OpenCode Runtime**: `Execution` models map directly to isolated code execution sandboxes.
 3. **Vector / Semantic Search**: `MemoryEntry` will receive `embedding vector(1536)` fields with `pgvector` index support in Phase 7.
+

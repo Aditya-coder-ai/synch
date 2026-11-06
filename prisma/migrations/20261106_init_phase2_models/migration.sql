@@ -369,3 +369,4 @@ ALTER TABLE "MemoryEntry" ADD CONSTRAINT "MemoryEntry_projectId_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "MemoryEntry" ADD CONSTRAINT "MemoryEntry_taskId_fkey" FOREIGN KEY ("taskId") REFERENCES "Task"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+

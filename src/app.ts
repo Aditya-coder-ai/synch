@@ -13,9 +13,12 @@ import { env, parseCorsOrigins } from './config/env.js';
 import { errorHandler, notFoundHandler } from './common/errors/error-handler.js';
 import { healthRoutes } from './modules/health/health.routes.js';
 import type { HealthService } from './modules/health/health.service.js';
+import { switchModule } from './modules/switch/switch.module.js';
+import type { SwitchService } from './modules/switch/switch.service.js';
 
 export interface BuildAppOptions {
   healthService?: HealthService;
+  switchService?: SwitchService;
   logger?: boolean | object;
 }
 
@@ -28,12 +31,15 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
           'req.headers.authorization',
           'req.headers.cookie',
           'req.headers["x-api-key"]',
+          'req.headers["x-connection-id"]',
           'req.body.password',
           'req.body.token',
           'req.body.secret',
+          'req.body.apiKey',
           '*.password',
           '*.token',
           '*.secret',
+          '*.apiKey',
         ],
         censor: '[REDACTED]',
       },
@@ -54,7 +60,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
   await app.register(cors, {
     origin: parseCorsOrigins(env.CORS_ORIGIN),
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Connection-Id'],
     credentials: true,
   });
 
@@ -78,6 +84,10 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
         {
           name: 'Health',
           description: 'Liveness and readiness health monitoring endpoints',
+        },
+        {
+          name: 'Integrations - Switch',
+          description: 'Switch Agent Protocol integration and room collaboration endpoints',
         },
       ],
     },
@@ -105,6 +115,10 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
       await v1.register(healthRoutes, {
         healthService: options.healthService,
       });
+
+      await v1.register(switchModule, {
+        switchService: options.switchService,
+      });
     },
     { prefix: '/api/v1' },
   );
@@ -116,4 +130,3 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
 
   return app;
 }
-

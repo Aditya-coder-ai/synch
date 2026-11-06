@@ -58,3 +58,4 @@ export function handleDatabaseError(error: unknown, fallbackMessage = 'Database 
 
   return new DatabaseError(fallbackMessage);
 }
+

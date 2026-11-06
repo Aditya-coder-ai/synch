@@ -255,7 +255,7 @@ model Conversation {
   id             String   @id @default(cuid())
   projectId      String
   title          String
-  externalRoomId String?
+  externalRoomId String?  @unique
   source         String   @default("internal")
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -269,19 +269,39 @@ model Conversation {
 }
 
 model Message {
-  id             String            @id @default(cuid())
-  conversationId String
-  senderType     MessageSenderType
-  senderId       String?
-  content        String
-  metadata       Json              @default("{}")
-  createdAt      DateTime          @default(now())
+  id                String            @id @default(cuid())
+  conversationId    String
+  senderType        MessageSenderType
+  senderId          String?
+  content           String
+  externalMessageId String?           @unique
+  metadata          Json              @default("{}")
+  createdAt         DateTime          @default(now())
 
   // Relations
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([conversationId, createdAt])
   @@index([senderType, senderId])
+  @@index([externalMessageId])
+}
+
+// ==============================================================================
+// MODELS: SWITCH INTEGRATION & EVENT DEDUPLICATION
+// ==============================================================================
+
+model SwitchEventLog {
+  id          String   @id @default(cuid())
+  eventId     String   @unique
+  eventType   String
+  roomId      String
+  senderId    String?
+  processedAt DateTime @default(now())
+  status      String   @default("PROCESSED") // PROCESSED, DUPLICATE, UNMAPPED_ROOM, ERROR
+  payload     Json     @default("{}")
+
+  @@index([roomId, eventId])
+  @@index([processedAt])
 }
 
 // ==============================================================================

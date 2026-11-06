@@ -10,3 +10,4 @@ export const createDecisionSchema = z.object({
   decidedByAgentId: z.string().trim().min(1).optional().nullable(),
   metadata: z.record(z.unknown()).default({}),
 });
+

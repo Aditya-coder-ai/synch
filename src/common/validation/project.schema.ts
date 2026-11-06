@@ -24,3 +24,4 @@ export const updateProjectSchema = z
     archivedAt: z.coerce.date().optional().nullable(),
   })
   .strict();
+

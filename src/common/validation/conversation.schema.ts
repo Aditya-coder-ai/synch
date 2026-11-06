@@ -21,3 +21,4 @@ export const createMessageSchema = z.object({
   content: z.string().trim().min(1, 'Message content cannot be empty').max(20000),
   metadata: z.record(z.unknown()).default({}),
 });
+

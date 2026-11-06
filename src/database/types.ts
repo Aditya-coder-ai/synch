@@ -250,3 +250,4 @@ export interface MemoryEntryModel {
   createdAt: Date;
   updatedAt: Date;
 }
+

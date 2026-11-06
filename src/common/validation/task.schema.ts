@@ -69,3 +69,4 @@ export const createTaskDependencySchema = z
     message: 'A task cannot depend on itself',
     path: ['dependsOnTaskId'],
   });
+

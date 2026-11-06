@@ -33,3 +33,4 @@ export const createExecutionEventSchema = z.object({
   message: z.string().trim().min(1, 'Message is required').max(1000),
   payload: z.record(z.unknown()).default({}),
 });
+

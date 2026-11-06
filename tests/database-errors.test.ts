@@ -72,3 +72,4 @@ describe('Database Error Handler & Mapping', () => {
     expect(JSON.stringify(result)).not.toContain('SuperSecretPassword123');
   });
 });
+

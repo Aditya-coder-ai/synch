@@ -28,3 +28,4 @@ export const addWorkspaceMemberSchema = z.object({
 export const updateWorkspaceMemberRoleSchema = z.object({
   role: workspaceRoleSchema,
 });
+

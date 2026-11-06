@@ -31,6 +31,7 @@ CrewFlow is built as a **modular monolith** with strict separation of concerns:
 - **Routing & Controllers**: Fastify route definitions handling HTTP contracts and input validation.
 - **Business Logic Services**: Dedicated services containing pure domain logic without HTTP or DB couplings.
 - **Database Access Layer**: Prisma ORM with Supabase PostgreSQL, typed domain models, centralized error translation, and DAG cycle detectors.
+- **Switch Integration Layer**: Real-time communication bridge speaking the official Switch Agent Protocol (WebSocket & HTTP).
 - **Cross-Cutting Concerns**: Centralized error mapping, request logging with sensitive field redaction, and Zod type-safe validation.
 
 ### Directory Structure
@@ -52,10 +53,27 @@ src/
 │   ├── errors.ts          # Prisma error code mapper (P2002 -> Conflict, P2025 -> NotFound)
 │   └── validators.ts      # DAG cycle detector & assignment rule validators
 └── modules/
-    └── health/            # Liveness and readiness monitoring module
-        ├── health.schema.ts
-        ├── health.service.ts
-        └── health.routes.ts
+    ├── health/            # Liveness and readiness monitoring module
+    │   ├── health.schema.ts
+    │   ├── health.service.ts
+    │   └── health.routes.ts
+    └── switch/            # Switch Agent Protocol integration module
+        ├── switch.constants.ts
+        ├── switch.config.ts
+        ├── switch.types.ts
+        ├── switch.schemas.ts
+        ├── switch.errors.ts
+        ├── switch.mapper.ts
+        ├── switch.repository.ts
+        ├── switch.client.ts
+        ├── switch.connection.ts
+        ├── switch.events.ts
+        ├── switch.service.ts
+        ├── switch.routes.ts
+        ├── switch.module.ts
+        └── adapters/
+            ├── inbound.adapter.ts
+            └── outbound.adapter.ts
 
 prisma/
 ├── schema.prisma          # Supabase PostgreSQL relational schema definition
@@ -69,7 +87,13 @@ tests/
 ├── database-validators.test.ts # Task assignment & DAG cycle detection tests
 ├── database-errors.test.ts     # Prisma code mapping to AppErrors tests
 ├── validation-schemas.test.ts  # Zod schema validation tests
-└── schema-structure.test.ts    # Prisma schema & migration file structure tests
+├── schema-structure.test.ts    # Prisma schema & migration file structure tests
+└── switch/
+    ├── switch-config.test.ts   # Switch configuration parsing & validation tests
+    ├── switch-mapper.test.ts   # Participant identification & frame normalization tests
+    ├── switch-events.test.ts   # Inbound pipeline, deduplication, & echo-prevention tests
+    ├── switch-client.test.ts   # Health probe & outbound message delivery tests
+    └── switch-routes.test.ts   # Switch API routes & status endpoint tests
 ```
 
 ---
@@ -84,123 +108,109 @@ See [`docs/database.md`](file:///docs/database.md) for the full architectural sp
 - **Tasks & Dependencies**: `Task` (Statuses: `BACKLOG`, `TODO`, `IN_PROGRESS`, `IN_REVIEW`, `BLOCKED`, `COMPLETED`, `CANCELLED`; Priorities: `LOW`, `MEDIUM`, `HIGH`, `CRITICAL`), `TaskDependency`
 - **Agents**: `Agent` (Roles: `COORDINATOR`, `DEVELOPER`, `QA`, `REVIEWER`; Statuses: `ACTIVE`, `IDLE`, `BUSY`, `PAUSED`, `ERROR`, `OFFLINE`)
 - **Conversations & Messages**: `Conversation`, `Message` (Senders: `HUMAN`, `AGENT`, `SYSTEM`)
+- **Switch Integration**: `SwitchEventLog` (Append-only event deduplication and unmapped room diagnostic log)
 - **Decisions**: `Decision` (Project-level persistent decision rationale)
 - **Approvals**: `Approval` (Statuses: `PENDING`, `APPROVED`, `REJECTED`, `EXPIRED`, `CANCELLED`)
 - **Execution Tracking**: `Execution` (Statuses: `QUEUED`, `RUNNING`, `SUCCEEDED`, `FAILED`, `CANCELLED`, `AWAITING_APPROVAL`), `ExecutionEvent` (append-only log)
 - **Persistent Memory**: `MemoryEntry` (Categories: `PROJECT_CONTEXT`, `USER_PREFERENCE`, `DECISION`, `TECHNICAL_KNOWLEDGE`, `TASK_CONTEXT`, `LESSON_LEARNED`)
 
-### Key Invariants & Safeguards
-1. **Single Assignee Invariant**: A task can be assigned to a human (`assignedUserId`) OR an AI agent (`assignedAgentId`), but **never both simultaneously**.
-2. **Self-Dependency Prohibition**: A task cannot depend on itself (`taskId != dependsOnTaskId`).
-3. **Cross-Project Dependency Prohibition**: Dependencies across different projects are disallowed.
-4. **DAG Cycle Prevention**: Multi-step cycles (A → B → C → A) are detected using application-level Depth-First Search (`detectDependencyCycle`).
-5. **Secret Redaction**: Agent configurations strictly forbid storing secrets, API keys, or passwords.
+---
+
+## 4. Switch Integration Architecture (Phase 3)
+
+See [`docs/switch-integration.md`](file:///docs/switch-integration.md) for full protocol analysis, event catalog, and setup guide.
+
+### Key Capabilities
+- **Official Switch Agent Protocol**: Inbound WebSocket stream (`GET /agents/{id}/connection/ws`) with periodic heartbeat ping/pong, and legacy SSE fallback.
+- **Event Deduplication**: Database-enforced idempotency via `SwitchEventLog` and `Message.externalMessageId` unique constraints.
+- **Room-to-Project Mapping**: Connects Switch rooms to CrewFlow conversations using `Conversation.externalRoomId`.
+- **Echo-Loop Prevention**: Ignores messages originating from CrewFlow or the local agent.
+- **Outbound Messaging**: Delivers outbound messages to Switch rooms via `POST /agents/{agent_id}/message`.
+- **Safe Diagnostics**: Unmapped rooms are safely logged in `SwitchEventLog` without guessing an arbitrary project.
 
 ---
 
-## 4. Prerequisites
+## 5. Prerequisites
 
 - **Node.js**: `v20+` (tested on Node `v24.x`)
 - **Package Manager**: `npm`
 - **Database**: Supabase PostgreSQL database instance (or local PostgreSQL)
+- **Switch Server** (optional for local deployment): Docker container or hosted Switch instance
 
 ---
 
-## 5. Installation
+## 6. Installation & Configuration
 
-Clone the repository and install dependencies:
+1. Clone the repository and install dependencies:
+   ```bash
+   npm install
+   ```
 
-```bash
-npm install
-```
+2. Copy environment file and configure variables:
+   ```bash
+   cp .env.example .env
+   ```
 
----
+### Switch Configuration Variables
 
-## 6. Environment Configuration
-
-Copy the example environment file and configure your values:
-
-```bash
-cp .env.example .env
-```
-
-### Environment Variables Reference
-
-| Variable | Type | Default | Description |
-|---|---|---|---|
-| `NODE_ENV` | `enum` | `development` | Deployment environment (`development`, `test`, `production`) |
-| `PORT` | `number` | `3000` | Port for the HTTP server to listen on |
-| `HOST` | `string` | `0.0.0.0` | Network binding host |
-| `LOG_LEVEL` | `enum` | `info` | Logger severity (`fatal`, `error`, `warn`, `info`, `debug`, `trace`, `silent`) |
-| `CORS_ORIGIN` | `string` | `*` | Allowed CORS origins (comma-separated or `*`) |
-| `BODY_LIMIT` | `number` | `1048576` | Maximum request body limit in bytes (1MB) |
-| `DATABASE_URL` | `string` | *(optional)* | Supabase pooled connection string (port 6543) for runtime queries |
-| `DIRECT_URL` | `string` | *(optional)* | Supabase direct connection string (port 5432) for Prisma migrations |
+| Variable | Default | Description |
+|---|---|---|
+| `SWITCH_ENABLED` | `false` | Enable or disable Switch live background connection |
+| `SWITCH_BASE_URL` | `http://localhost:8080` | Base URL of the Switch server bridge |
+| `SWITCH_AGENT_ID` | `""` | Registered agent identifier in Switch |
+| `SWITCH_API_KEY` | `""` | Agent Bearer API token |
+| `SWITCH_TRANSPORT` | `WEBSOCKET` | Inbound transport (`WEBSOCKET` or `SSE`) |
+| `SWITCH_CONNECTION_TIMEOUT_MS` | `10000` | Connection timeout in milliseconds |
+| `SWITCH_RECONNECT_MAX_ATTEMPTS` | `10` | Maximum reconnection attempts |
 
 ---
 
 ## 7. Database Setup & Migrations
 
-1. Configure `DATABASE_URL` and `DIRECT_URL` in your `.env` file with your Supabase credentials:
-   ```env
-   # Transaction pooling (runtime)
-   DATABASE_URL="postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres?pgbouncer=true"
-   # Direct connection (migrations)
-   DIRECT_URL="postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:5432/postgres"
-   ```
-
-2. Generate the Prisma client:
+1. Configure `DATABASE_URL` and `DIRECT_URL` in `.env`.
+2. Generate Prisma client:
    ```bash
    npm run prisma:generate
    ```
-
-3. Run migrations on Supabase:
+3. Run migrations:
    ```bash
    npm run prisma:migrate
    ```
 
 ---
 
-## 8. Development Commands
-
-| Command | Action |
-|---|---|
-| `npm run dev` | Starts server with live reloading via `tsx watch` |
-| `npm run build` | Compiles TypeScript to JavaScript into `dist/` |
-| `npm start` | Runs the compiled server from `dist/server.js` |
-| `npm run lint` | Runs ESLint analysis across TypeScript files |
-| `npm run lint:fix` | Runs ESLint and auto-fixes issues |
-| `npm run format` | Formats codebase using Prettier |
-| `npm run format:check` | Verifies code formatting |
-
----
-
-## 9. Testing Commands
-
-All unit and integration tests are powered by **Vitest**:
+## 8. Development & Testing Commands
 
 ```bash
-# Run tests once
+# Start in development mode with hot reload
+npm run dev
+
+# Run test suite
 npm test
 
-# Run tests in watch mode
-npm run test:watch
-
-# Run tests with code coverage report
+# Run tests with coverage
 npm run test:coverage
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
 ```
 
 ---
 
-## 10. API Documentation
-
-Interactive Swagger OpenAPI 3.0 documentation is automatically generated and accessible in your browser:
+## 9. API Documentation
 
 - **Swagger UI**: [http://localhost:3000/docs](http://localhost:3000/docs)
 - **OpenAPI JSON**: [http://localhost:3000/docs/json](http://localhost:3000/docs/json)
+- **Switch Status**: `GET /api/v1/integrations/switch/status`
+- **Switch Health Probe**: `GET /api/v1/integrations/switch/health`
+- **Map Room**: `POST /api/v1/integrations/switch/rooms/map`
+- **Send Message**: `POST /api/v1/integrations/switch/messages`
 
 ---
 
-## 11. License
+## 10. License
 
 UNLICENSED - Proprietary to CrewFlow.

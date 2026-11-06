@@ -83,3 +83,4 @@ describe('Prisma Schema Definition & Migration Verification', () => {
     expect(sql).toContain('TaskDependency_no_self_dependency_check');
   });
 });
+
