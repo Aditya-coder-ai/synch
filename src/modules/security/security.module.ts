@@ -91,3 +91,4 @@ export const securityModule: FastifyPluginAsync<SecurityModuleOptions> = async (
     (req, reply) => controller.getAuditLogs(req, reply),
   );
 };
+

@@ -42,3 +42,4 @@ CREATE INDEX "AuditLog_actorId_createdAt_idx" ON "AuditLog"("actorId", "createdA
 CREATE INDEX "AuditLog_actionCategory_idx" ON "AuditLog"("actionCategory");
 CREATE INDEX "AuditLog_outcome_idx" ON "AuditLog"("outcome");
 CREATE INDEX "AuditLog_createdAt_idx" ON "AuditLog"("createdAt");
+

@@ -26,3 +26,4 @@ export interface CreateApprovalRecordInput {
   payload?: Record<string, unknown>;
   expiresAt?: Date | null;
 }
+

@@ -88,3 +88,4 @@ export class InsufficientPermissionsError extends AppError {
     super(message, 403, ErrorCode.INSUFFICIENT_PERMISSIONS, details);
   }
 }
+

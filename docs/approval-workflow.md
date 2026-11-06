@@ -148,3 +148,4 @@ Whenever approval events occur, `ApprovalNotifier` posts rich markdown notificat
 * **Endpoint**: `GET /api/v1/security/audit`
 * **Query Parameters**: `projectId`, `actorId`, `outcome`, `actionCategory`, `limit`, `offset`.
 * **Response**: `200 OK` with sanitized, secret-scrubbed audit logs.
+

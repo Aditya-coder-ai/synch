@@ -76,3 +76,4 @@ describe('Phase 7: Cryptographic Approval Digest Tests', () => {
     expect(verifyActionDigest(tamperedCommand, digest)).toBe(false);
   });
 });
+

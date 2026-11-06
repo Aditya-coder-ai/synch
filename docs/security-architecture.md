@@ -107,3 +107,4 @@ All security-sensitive operations are recorded in the `AuditLog` table:
 1. **OS Sandbox Boundaries**: While workspace directory containment prevents relative path traversal (`../`), defense against kernel-level breakouts requires running containers (Docker/gVisor) in production environments.
 2. **Dynamic Script Content**: Commands passed as strings are scanned for known dangerous binaries (`rm -rf`, `dd`, `mkfs`); obfuscated bash scripts (e.g. base64-encoded strings piped to bash) require runtime isolation.
 3. **Network Isolation**: Network restrictions depend on the host firewall or container network namespace when OpenCode runs in non-isolated network mode.
+

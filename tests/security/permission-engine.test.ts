@@ -157,3 +157,4 @@ describe('Phase 7: Permission Engine & Security Policy Tests', () => {
     expect(gitCommit.riskLevel).toBe(RiskLevel.L1);
   });
 });
+

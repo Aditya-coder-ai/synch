@@ -53,3 +53,4 @@ export const approvalQueryFiltersSchema = z.object({
 export const approvalIdParamSchema = z.object({
   id: z.string().trim().min(1, 'Approval ID is required'),
 });
+

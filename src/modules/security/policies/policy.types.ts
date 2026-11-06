@@ -22,3 +22,4 @@ export const DEFAULT_SECURITY_POLICY_CONFIG: SecurityPolicyConfig = {
   allowSelfApprovalForL1: false,
   defaultApprovalTimeoutSeconds: 86400, // 24 hours
 };
+

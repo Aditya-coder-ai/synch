@@ -28,3 +28,4 @@ export interface AuditLogQueryFilters {
   limit?: number;
   offset?: number;
 }
+

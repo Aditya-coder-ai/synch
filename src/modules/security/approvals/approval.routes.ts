@@ -127,3 +127,4 @@ export const approvalRoutes: FastifyPluginAsync<ApprovalRoutesOptions> = async (
     (req, reply) => controller.cancel(req, reply),
   );
 };
+

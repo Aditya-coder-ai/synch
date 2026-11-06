@@ -182,3 +182,4 @@ describe('Phase 7: Approval Lifecycle & Authorization Tests', () => {
     await expect(service.approve('appr-001', 'unauthorized-user')).rejects.toThrow(UnauthorizedReviewerError);
   });
 });
+

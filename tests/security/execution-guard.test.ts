@@ -158,3 +158,4 @@ describe('Phase 7: ExecutionGuard Pre-Execution Verification Tests', () => {
     ).rejects.toThrow(ApprovalExpiredError);
   });
 });
+

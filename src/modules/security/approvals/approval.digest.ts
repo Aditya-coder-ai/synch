@@ -52,3 +52,4 @@ export function verifyActionDigest(action: ActionPayload, expectedDigest: string
   const actualDigest = computeActionDigest(action);
   return actualDigest.toLowerCase() === expectedDigest.toLowerCase();
 }
+
