@@ -31,6 +31,7 @@ export class SwitchService {
 
   private lastReceivedAt: Date | null = null;
   private lastSentAt: Date | null = null;
+  private lastError: string | null = null;
 
   constructor(options: SwitchServiceOptions) {
     this.config = options.config;
@@ -45,6 +46,11 @@ export class SwitchService {
     // Track frame arrival
     this.connectionManager.on('frame', () => {
       this.lastReceivedAt = new Date();
+    });
+
+    // Track connection errors without crashing EventEmitter
+    this.connectionManager.on('error', err => {
+      this.lastError = err instanceof Error ? err.message : String(err);
     });
   }
 
@@ -67,7 +73,7 @@ export class SwitchService {
       lastDisconnectedAt: this.connectionManager.lastDisconnectedAt?.toISOString() ?? null,
       lastReceivedAt: this.lastReceivedAt?.toISOString() ?? null,
       lastSentAt: this.lastSentAt?.toISOString() ?? null,
-      lastError: this.connectionManager.lastError,
+      lastError: this.lastError ?? this.connectionManager.lastError,
       reconnectAttempts: this.connectionManager.getReconnectAttempts(),
     };
   }
