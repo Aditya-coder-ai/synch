@@ -1,0 +1,10 @@
+{
+  "project": "crewflow-backend",
+  "version": "1.0.0",
+  "mode": "interactive",
+  "workflow": {
+    "auto_advance": false,
+    "require_approval": true
+  }
+}
+
