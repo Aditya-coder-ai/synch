@@ -117,3 +117,4 @@ describe('Switch Protocol Mapper', () => {
     });
   });
 });
+

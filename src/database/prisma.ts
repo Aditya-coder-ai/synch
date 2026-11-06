@@ -1,16 +1,17 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { env } from '../config/env.js';
 
 let prismaInstance: PrismaClient | null = null;
 
 export function getPrismaClient(): PrismaClient {
   if (!prismaInstance) {
+    const connectionString =
+      env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/crewflow?schema=public';
+    const adapter = new PrismaPg({ connectionString });
+
     prismaInstance = new PrismaClient({
-      datasources: {
-        db: {
-          url: env.DATABASE_URL,
-        },
-      },
+      adapter,
       log: env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
     });
   }

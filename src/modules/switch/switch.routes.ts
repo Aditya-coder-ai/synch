@@ -114,3 +114,4 @@ export const switchRoutes: FastifyPluginAsync<SwitchRouteOptions> = async (
     },
   );
 };
+

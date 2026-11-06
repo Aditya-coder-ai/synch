@@ -43,3 +43,4 @@ export const SwitchDefaults = {
   RECONNECT_MAX_ATTEMPTS: 10,
   RECONNECT_JITTER_RATIO: 0.25,
 } as const;
+

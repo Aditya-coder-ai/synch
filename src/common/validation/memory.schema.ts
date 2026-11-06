@@ -18,7 +18,7 @@ export const createMemoryEntrySchema = z.object({
   content: z.string().trim().min(1, 'Memory content is required').max(10000),
   sourceType: z.string().trim().min(1, 'Source type is required').max(50),
   sourceId: z.string().trim().max(100).optional().nullable(),
-  metadata: z.record(z.unknown()).default({}),
+  metadata: z.record(z.string(), z.unknown()).default({}),
 });
 
 export const updateMemoryEntrySchema = z
@@ -26,7 +26,7 @@ export const updateMemoryEntrySchema = z
     category: memoryCategorySchema.optional(),
     title: z.string().trim().min(1).max(200).optional(),
     content: z.string().trim().min(1).max(10000).optional(),
-    metadata: z.record(z.unknown()).optional(),
+    metadata: z.record(z.string(), z.unknown()).optional(),
   })
   .strict();
 

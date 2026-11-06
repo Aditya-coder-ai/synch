@@ -4,7 +4,14 @@ import { SwitchDefaults, SwitchTransportType } from './switch.constants.js';
 
 export const switchConfigSchema = z
   .object({
-    enabled: z.coerce.boolean().default(false),
+    enabled: z
+      .preprocess(val => {
+        if (typeof val === 'string') {
+          return val.toLowerCase() === 'true' || val === '1';
+        }
+        return Boolean(val);
+      }, z.boolean())
+      .default(false),
     baseUrl: z
       .string()
       .trim()
@@ -12,7 +19,7 @@ export const switchConfigSchema = z
       .default('http://localhost:8080'),
     agentId: z.string().trim().default(''),
     apiKey: z.string().trim().default(''),
-    connectionId: z.string().trim().uuid().default(() => crypto.randomUUID()),
+    connectionId: z.string().trim().min(1).default(() => crypto.randomUUID()),
     transport: z
       .enum([SwitchTransportType.WEBSOCKET, SwitchTransportType.SSE])
       .default(SwitchTransportType.WEBSOCKET),
@@ -59,3 +66,4 @@ export function parseSwitchConfig(envObj: Record<string, unknown> = process.env)
     scope: envObj.SWITCH_ROOM_SCOPE || 'all',
   });
 }
+

@@ -18,7 +18,7 @@ export const agentStatusSchema = z.enum([
 ]);
 
 export const jsonSchema = z.union([
-  z.record(z.unknown()),
+  z.record(z.string(), z.unknown()),
   z.array(z.unknown()),
   z.string(),
   z.number(),
@@ -34,7 +34,7 @@ export const createAgentSchema = z.object({
   status: agentStatusSchema.default(AgentStatus.IDLE),
   capabilities: z.array(z.string().trim().min(1)).default([]),
   configuration: z
-    .record(z.unknown())
+    .record(z.string(), z.unknown())
     .default({})
     .refine(
       config => {
@@ -57,7 +57,7 @@ export const updateAgentSchema = z
     status: agentStatusSchema.optional(),
     capabilities: z.array(z.string().trim().min(1)).optional(),
     configuration: z
-      .record(z.unknown())
+      .record(z.string(), z.unknown())
       .optional()
       .refine(
         config => {

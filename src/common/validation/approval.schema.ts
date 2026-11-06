@@ -16,7 +16,7 @@ export const createApprovalSchema = z.object({
   requestedByAgentId: z.string().trim().min(1).optional().nullable(),
   actionType: z.string().trim().min(1, 'Action type is required').max(100),
   description: z.string().trim().min(1, 'Description is required').max(1000),
-  payload: z.record(z.unknown()).default({}),
+  payload: z.record(z.string(), z.unknown()).default({}),
 });
 
 export const reviewApprovalSchema = z.object({

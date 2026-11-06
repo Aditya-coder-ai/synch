@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { SwitchEventType } from './switch.constants.js';
 
 export const switchAttachmentSchema = z.object({
   filename: z.string().default('attachment'),
@@ -45,7 +44,7 @@ export const switchEventFrameSchema = z.object({
 export const outboundMessageInputSchema = z.object({
   roomId: z.string().trim().min(1, 'Room ID is required').max(200),
   content: z.string().trim().min(1, 'Content cannot be empty').max(20000),
-  metadata: z.record(z.unknown()).default({}),
+  metadata: z.record(z.string(), z.unknown()).default({}),
 });
 
 export const mapRoomInputSchema = z.object({
@@ -69,3 +68,4 @@ export const switchStatusResponseSchema = z.object({
     reconnectAttempts: z.number(),
   }),
 });
+

@@ -199,3 +199,4 @@ Add the following to your `.env` file:
   Returns connection state, transport, timestamps of last received/sent messages, and retry count. Sensitive tokens are never leaked.
 - **Bridge Health Probe**: `GET /api/v1/integrations/switch/health`
   Pings the Switch server's `GET /health` endpoint to verify live network reachability. Returns HTTP 200 or 503.
+

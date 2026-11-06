@@ -36,6 +36,8 @@ describe('Switch Integration Routes', () => {
         deliveredAt: new Date('2026-11-06T12:10:00.000Z'),
         roomId: '!room_abc:server',
       }),
+      start: vi.fn().mockResolvedValue(undefined),
+      stop: vi.fn().mockResolvedValue(undefined),
     };
   });
 
@@ -157,3 +159,4 @@ describe('Switch Integration Routes', () => {
     await app.close();
   });
 });
+

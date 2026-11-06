@@ -33,7 +33,9 @@ export const switchModule: FastifyPluginAsync<SwitchModuleOptions> = async (
   // Gracefully disconnect Switch on Fastify shutdown
   fastify.addHook('onClose', async () => {
     fastify.log.info('Shutting down Switch integration');
-    await switchService.stop();
+    if (switchService && typeof switchService.stop === 'function') {
+      await switchService.stop();
+    }
   });
 
   // Register routes under /api/v1/integrations/switch
@@ -42,3 +44,4 @@ export const switchModule: FastifyPluginAsync<SwitchModuleOptions> = async (
     switchService,
   });
 };
+

@@ -8,6 +8,6 @@ export const createDecisionSchema = z.object({
   rationale: z.string().trim().min(1, 'Rationale is required').max(2000),
   decidedByUserId: z.string().trim().min(1).optional().nullable(),
   decidedByAgentId: z.string().trim().min(1).optional().nullable(),
-  metadata: z.record(z.unknown()).default({}),
+  metadata: z.record(z.string(), z.unknown()).default({}),
 });
 

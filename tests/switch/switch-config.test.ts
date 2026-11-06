@@ -53,3 +53,4 @@ describe('Switch Configuration Validation', () => {
     ).toThrowError(/SWITCH_BASE_URL must be a valid URL/);
   });
 });
+

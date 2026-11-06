@@ -26,3 +26,4 @@ CREATE TABLE "SwitchEventLog" (
 CREATE UNIQUE INDEX "SwitchEventLog_eventId_key" ON "SwitchEventLog"("eventId");
 CREATE INDEX "SwitchEventLog_roomId_eventId_idx" ON "SwitchEventLog"("roomId", "eventId");
 CREATE INDEX "SwitchEventLog_processedAt_idx" ON "SwitchEventLog"("processedAt");
+

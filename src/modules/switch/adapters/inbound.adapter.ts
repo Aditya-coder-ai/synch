@@ -16,3 +16,4 @@ export class SwitchInboundAdapter {
     return this.processor.processFrame(frame);
   }
 }
+

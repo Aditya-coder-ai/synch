@@ -90,3 +90,4 @@ export interface SwitchIntegrationStatus {
   lastError: string | null;
   reconnectAttempts: number;
 }
+

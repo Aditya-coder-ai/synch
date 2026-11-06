@@ -38,3 +38,4 @@ export class SwitchOutboundAdapter {
     return result;
   }
 }
+

@@ -58,3 +58,4 @@ export class SwitchDuplicateEventError extends SwitchError {
     this.name = 'SwitchDuplicateEventError';
   }
 }
+

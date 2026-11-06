@@ -19,6 +19,6 @@ export const createMessageSchema = z.object({
   senderType: messageSenderTypeSchema,
   senderId: z.string().trim().max(100).optional().nullable(),
   content: z.string().trim().min(1, 'Message content cannot be empty').max(20000),
-  metadata: z.record(z.unknown()).default({}),
+  metadata: z.record(z.string(), z.unknown()).default({}),
 });
 

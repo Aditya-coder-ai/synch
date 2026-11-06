@@ -1,0 +1,47 @@
+services:
+  # CrewFlow Backend API
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: crewflow-backend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - HOST=0.0.0.0
+      - LOG_LEVEL=info
+      - CORS_ORIGIN=*
+      - BODY_LIMIT=1048576
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/crewflow?schema=public
+      - DIRECT_URL=postgresql://postgres:postgres@postgres:5432/crewflow?schema=public
+      - SWITCH_ENABLED=false
+      - SWITCH_BASE_URL=http://localhost:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Local PostgreSQL Database (optional fallback for local testing)
+  postgres:
+    image: postgres:16-alpine
+    container_name: crewflow-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: crewflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d crewflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+

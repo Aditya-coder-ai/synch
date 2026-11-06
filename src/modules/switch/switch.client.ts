@@ -110,3 +110,4 @@ export class SwitchClient {
     return res.json().catch(() => ({}));
   }
 }
+
