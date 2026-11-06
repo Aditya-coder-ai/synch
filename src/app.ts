@@ -17,11 +17,15 @@ import { switchModule } from './modules/switch/switch.module.js';
 import type { SwitchService } from './modules/switch/switch.service.js';
 import { orchestrationModule } from './modules/orchestration/orchestration.module.js';
 import type { OrchestrationService } from './modules/orchestration/core/orchestration.service.js';
+import { runtimeModule, type RuntimeModuleOptions } from './modules/runtime/runtime.module.js';
+import { memoryModule, type MemoryModuleOptions } from './modules/memory/memory.module.js';
 
 export interface BuildAppOptions {
   healthService?: HealthService;
   switchService?: SwitchService;
   orchestrationService?: OrchestrationService;
+  runtimeModuleOptions?: RuntimeModuleOptions;
+  memoryModuleOptions?: MemoryModuleOptions;
   logger?: boolean | object;
 }
 
@@ -96,6 +100,14 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
           name: 'Orchestration',
           description: 'Autonomous multi-agent orchestration, planning, scheduling, and execution',
         },
+        {
+          name: 'Runtime',
+          description: 'OpenCode agent execution runtime and workspace environments',
+        },
+        {
+          name: 'Memory',
+          description: 'Shared intelligence, semantic memory retrieval, and context construction',
+        },
       ],
     },
     transform: jsonSchemaTransform,
@@ -131,6 +143,10 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
         orchestrationService: options.orchestrationService,
         switchService: options.switchService,
       });
+
+      await v1.register(runtimeModule, options.runtimeModuleOptions ?? {});
+
+      await v1.register(memoryModule, options.memoryModuleOptions ?? {});
     },
     { prefix: '/api/v1' },
   );

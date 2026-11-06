@@ -58,3 +58,4 @@ ALTER TABLE "Orchestration" ADD CONSTRAINT "Orchestration_projectId_fkey" FOREIG
 ALTER TABLE "Orchestration" ADD CONSTRAINT "Orchestration_initiatorUserId_fkey" FOREIGN KEY ("initiatorUserId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 ALTER TABLE "Orchestration" ADD CONSTRAINT "Orchestration_conversationId_fkey" FOREIGN KEY ("conversationId") REFERENCES "Conversation"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 ALTER TABLE "OrchestrationEvent" ADD CONSTRAINT "OrchestrationEvent_orchestrationId_fkey" FOREIGN KEY ("orchestrationId") REFERENCES "Orchestration"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+

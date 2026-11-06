@@ -23,3 +23,4 @@ export interface OrchestrationDomainEvent {
   payload?: Record<string, unknown>;
   timestamp?: string;
 }
+

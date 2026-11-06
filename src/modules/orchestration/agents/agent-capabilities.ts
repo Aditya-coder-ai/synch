@@ -95,3 +95,4 @@ export class CapabilityRegistry {
     return { matched, missing, matchPercentage };
   }
 }
+

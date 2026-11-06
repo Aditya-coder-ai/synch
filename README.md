@@ -54,26 +54,26 @@ src/
 │   └── validators.ts      # DAG cycle detector & assignment rule validators
 └── modules/
     ├── health/            # Liveness and readiness monitoring module
-    │   ├── health.schema.ts
-    │   ├── health.service.ts
-    │   └── health.routes.ts
-    └── switch/            # Switch Agent Protocol integration module
-        ├── switch.constants.ts
-        ├── switch.config.ts
-        ├── switch.types.ts
-        ├── switch.schemas.ts
-        ├── switch.errors.ts
-        ├── switch.mapper.ts
-        ├── switch.repository.ts
-        ├── switch.client.ts
-        ├── switch.connection.ts
-        ├── switch.events.ts
-        ├── switch.service.ts
-        ├── switch.routes.ts
-        ├── switch.module.ts
-        └── adapters/
-            ├── inbound.adapter.ts
-            └── outbound.adapter.ts
+    ├── switch/            # Switch Agent Protocol integration module
+    ├── orchestration/     # Phase 4 Agent Orchestration & DAG Scheduler
+    │   ├── core/          # Orchestrator facade & service
+    │   ├── planner/       # Intent analysis & task decomposition
+    │   ├── agents/        # Registry, capability matcher & scoring
+    │   ├── scheduler/     # Dependency graph & topological tiers
+    │   ├── state/         # Strict lifecycle state machine
+    │   ├── execution/     # Dispatch abstraction & mock provider
+    │   └── events/        # Domain event logging & Switch notifications
+    ├── runtime/           # Phase 5 OpenCode Agent Runtime
+    │   ├── opencode/      # Authenticated HTTP client & session manager
+    │   ├── workspace/     # Project containment & path traversal guard
+    │   ├── permissions/   # Least-privilege policy & approval checks
+    │   └── execution/     # Real OpenCode executor & result verifier
+    └── memory/            # Phase 6 Shared Intelligence & Memory Engine
+        ├── extraction/    # Deterministic extractor & secret validator
+        ├── storage/       # Project-scoped memory repository & service
+        ├── retrieval/     # Text search & explainable ranker
+        ├── context/       # Structured agent context builder
+        └── maintenance/   # Conflict resolution & soft archiver
 
 prisma/
 ├── schema.prisma          # Supabase PostgreSQL relational schema definition
@@ -130,7 +130,43 @@ See [`docs/switch-integration.md`](file:///docs/switch-integration.md) for full 
 
 ---
 
-## 5. Prerequisites
+## 5. Agent Orchestration Engine (Phase 4)
+
+See [`docs/orchestration-engine.md`](file:///docs/orchestration-engine.md) for planning decomposition strategies, capability scoring, DAG scheduler, and state machine specifications.
+
+### Key Capabilities
+- **Baseline Planning**: Analyzes intent and ambiguity to generate structured execution plans for features, bug fixes, refactorings, and security audits.
+- **Intelligent Agent Selection**: Capability-based matching with workload penalties to prevent hotspotting and filter unavailable agents (`OFFLINE`, `PAUSED`, `ERROR`).
+- **DAG Dependency Scheduler**: Cycle detection with 3-color DFS and topological execution tiers for parallel dispatch.
+- **Multi-Agent Handoffs**: Coordinates sequential task progressions (`Coordinator` -> `Developer` -> `QA` -> `Reviewer`).
+
+---
+
+## 6. OpenCode Agent Runtime (Phase 5)
+
+See [`docs/opencode-runtime.md`](file:///docs/opencode-runtime.md) for OpenCode server API integration, role mapping, workspace isolation, and result verification.
+
+### Key Capabilities
+- **OpenCode Server API**: Authenticated integration against `opencode serve` (version `1.19.5`) handling sessions, message prompts, diffs, and aborts.
+- **Workspace Security**: Strict path traversal prevention ensuring agent mutations remain within approved project folders (`<WORKSPACE_ROOT>/projects/<projectId>`).
+- **Least-Privilege Permissions**: Granular policy governing file modifications, test runs, and shell executions with default-deny on sensitive `.env` or secret files.
+- **Evidence Verification**: Verifies physical file mutations and test suite exit codes without blindly trusting agent text claims.
+
+---
+
+## 7. Shared Intelligence & Memory Engine (Phase 6)
+
+See [`docs/shared-memory-engine.md`](file:///docs/shared-memory-engine.md) for memory categories, extraction pipelines, explainable ranking, and context injection.
+
+### Key Capabilities
+- **Memory Categories**: Manages `DECISION`, `TECHNICAL_KNOWLEDGE`, `LESSON_LEARNED`, `USER_PREFERENCE`, `TASK_CONTEXT`, and `PROJECT_CONTEXT`.
+- **Secret & Noise Filtering**: Automatically scrubs passwords, API keys, and connection strings; rejects transient chatter.
+- **Explainable Ranking**: Multi-factor scoring formula combining keyword relevance, verification status, category weights, and recency decay.
+- **Structured Context Builder**: Assembles bounded, prioritized context for agent runtime prompts with strict project isolation.
+
+---
+
+## 8. Prerequisites
 
 - **Node.js**: `v20+` (tested on Node `v24.x`)
 - **Package Manager**: `npm`
