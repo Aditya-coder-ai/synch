@@ -15,10 +15,13 @@ import { healthRoutes } from './modules/health/health.routes.js';
 import type { HealthService } from './modules/health/health.service.js';
 import { switchModule } from './modules/switch/switch.module.js';
 import type { SwitchService } from './modules/switch/switch.service.js';
+import { orchestrationModule } from './modules/orchestration/orchestration.module.js';
+import type { OrchestrationService } from './modules/orchestration/core/orchestration.service.js';
 
 export interface BuildAppOptions {
   healthService?: HealthService;
   switchService?: SwitchService;
+  orchestrationService?: OrchestrationService;
   logger?: boolean | object;
 }
 
@@ -89,6 +92,10 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
           name: 'Integrations - Switch',
           description: 'Switch Agent Protocol integration and room collaboration endpoints',
         },
+        {
+          name: 'Orchestration',
+          description: 'Autonomous multi-agent orchestration, planning, scheduling, and execution',
+        },
       ],
     },
     transform: jsonSchemaTransform,
@@ -117,6 +124,11 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
       });
 
       await v1.register(switchModule, {
+        switchService: options.switchService,
+      });
+
+      await v1.register(orchestrationModule, {
+        orchestrationService: options.orchestrationService,
         switchService: options.switchService,
       });
     },

@@ -80,6 +80,18 @@ enum ExecutionStatus {
   AWAITING_APPROVAL
 }
 
+enum OrchestrationStatus {
+  CREATED
+  PLANNING
+  PLAN_READY
+  SCHEDULED
+  RUNNING
+  PAUSED
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
 enum MemoryCategory {
   PROJECT_CONTEXT
   USER_PREFERENCE
@@ -102,10 +114,11 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  memberships       WorkspaceMember[]
-  assignedTasks     Task[]            @relation("UserAssignedTasks")
-  decisions         Decision[]        @relation("UserDecisions")
-  reviewedApprovals Approval[]        @relation("UserReviewedApprovals")
+  memberships            WorkspaceMember[]
+  assignedTasks          Task[]            @relation("UserAssignedTasks")
+  decisions              Decision[]        @relation("UserDecisions")
+  reviewedApprovals      Approval[]        @relation("UserReviewedApprovals")
+  initiatedOrchestrations Orchestration[]
 
   @@index([email])
 }
@@ -156,14 +169,15 @@ model Project {
   archivedAt  DateTime?
 
   // Relations
-  workspace     Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  tasks         Task[]
-  agents        Agent[]
-  conversations Conversation[]
-  decisions     Decision[]
-  approvals     Approval[]
-  executions    Execution[]
-  memoryEntries MemoryEntry[]
+  workspace      Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  tasks          Task[]
+  agents         Agent[]
+  conversations  Conversation[]
+  decisions      Decision[]
+  approvals      Approval[]
+  executions     Execution[]
+  memoryEntries  MemoryEntry[]
+  orchestrations Orchestration[]
 
   @@index([workspaceId, status])
   @@index([workspaceId, createdAt])
@@ -182,6 +196,7 @@ model Task {
   priority        TaskPriority @default(MEDIUM)
   assignedUserId  String?
   assignedAgentId String?
+  orchestrationId String?
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
   dueAt           DateTime?
@@ -191,6 +206,7 @@ model Task {
   project       Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
   assignedUser  User?            @relation("UserAssignedTasks", fields: [assignedUserId], references: [id], onDelete: SetNull)
   assignedAgent Agent?           @relation("AgentAssignedTasks", fields: [assignedAgentId], references: [id], onDelete: SetNull)
+  orchestration Orchestration?   @relation(fields: [orchestrationId], references: [id], onDelete: SetNull)
   dependencies  TaskDependency[] @relation("TaskAsSubject")
   dependents    TaskDependency[] @relation("TaskAsDependency")
   executions    Execution[]
@@ -202,6 +218,7 @@ model Task {
   @@index([projectId, priority])
   @@index([assignedUserId])
   @@index([assignedAgentId])
+  @@index([orchestrationId])
 }
 
 model TaskDependency {
@@ -259,8 +276,9 @@ model Conversation {
   updatedAt      DateTime @updatedAt
 
   // Relations
-  project  Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  messages Message[]
+  project        Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  messages       Message[]
+  orchestrations Orchestration[]
 
   @@index([projectId, createdAt])
   @@index([externalRoomId])
@@ -427,4 +445,51 @@ model MemoryEntry {
   @@index([projectId, category])
   @@index([taskId])
   @@index([sourceType, sourceId])
+}
+
+// ==============================================================================
+// MODELS: ORCHESTRATION ENGINE (PHASE 4)
+// ==============================================================================
+
+model Orchestration {
+  id              String              @id @default(cuid())
+  projectId       String
+  initiatorUserId String?
+  conversationId  String?
+  status          OrchestrationStatus @default(CREATED)
+  objective       String
+  context         Json                @default("{}")
+  plan            Json?
+  error           String?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  // Relations
+  project       Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  initiatorUser User?                @relation(fields: [initiatorUserId], references: [id], onDelete: SetNull)
+  conversation  Conversation?        @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+  tasks         Task[]
+  events        OrchestrationEvent[]
+
+  @@index([projectId, status])
+  @@index([conversationId])
+  @@index([initiatorUserId])
+  @@index([createdAt])
+}
+
+model OrchestrationEvent {
+  id              String   @id @default(cuid())
+  orchestrationId String
+  eventType       String
+  message         String
+  payload         Json     @default("{}")
+  createdAt       DateTime @default(now())
+
+  // Relations
+  orchestration Orchestration @relation(fields: [orchestrationId], references: [id], onDelete: Cascade)
+
+  @@index([orchestrationId, createdAt])
+  @@index([eventType])
 }

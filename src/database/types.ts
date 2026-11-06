@@ -81,6 +81,19 @@ export const ExecutionStatus = {
 } as const;
 export type ExecutionStatus = (typeof ExecutionStatus)[keyof typeof ExecutionStatus];
 
+export const OrchestrationStatus = {
+  CREATED: 'CREATED',
+  PLANNING: 'PLANNING',
+  PLAN_READY: 'PLAN_READY',
+  SCHEDULED: 'SCHEDULED',
+  RUNNING: 'RUNNING',
+  PAUSED: 'PAUSED',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  CANCELLED: 'CANCELLED',
+} as const;
+export type OrchestrationStatus = (typeof OrchestrationStatus)[keyof typeof OrchestrationStatus];
+
 export const MemoryCategory = {
   PROJECT_CONTEXT: 'PROJECT_CONTEXT',
   USER_PREFERENCE: 'USER_PREFERENCE',
@@ -138,6 +151,7 @@ export interface TaskModel {
   priority: TaskPriority;
   assignedUserId: string | null;
   assignedAgentId: string | null;
+  orchestrationId?: string | null;
   createdAt: Date;
   updatedAt: Date;
   dueAt: Date | null;
@@ -249,5 +263,30 @@ export interface MemoryEntryModel {
   metadata: unknown;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface OrchestrationModel {
+  id: string;
+  projectId: string;
+  initiatorUserId: string | null;
+  conversationId: string | null;
+  status: OrchestrationStatus;
+  objective: string;
+  context: unknown;
+  plan: unknown | null;
+  error: string | null;
+  startedAt: Date | null;
+  completedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface OrchestrationEventModel {
+  id: string;
+  orchestrationId: string;
+  eventType: string;
+  message: string;
+  payload: unknown;
+  createdAt: Date;
 }
 
