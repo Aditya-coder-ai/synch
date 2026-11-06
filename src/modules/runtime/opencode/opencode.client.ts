@@ -187,3 +187,4 @@ export class OpenCodeClient {
     return this.request<unknown[]>('/agent', { method: 'GET' });
   }
 }
+

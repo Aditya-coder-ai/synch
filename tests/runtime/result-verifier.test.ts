@@ -40,3 +40,4 @@ describe('Result Verifier', () => {
     expect(evidence.checks.filesExist).toBe(false);
   });
 });
+

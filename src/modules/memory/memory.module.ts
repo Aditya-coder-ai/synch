@@ -75,3 +75,4 @@ export const memoryModule: FastifyPluginAsync<MemoryModuleOptions> = async (
   fastify.decorate('contextBuilder', contextBuilder);
   fastify.decorate('memoryExtractor', extractor);
 };
+

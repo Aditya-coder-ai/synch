@@ -76,3 +76,4 @@ export class WorkspaceManager {
     return WorkspaceSecurity.assertSafePath(projectWorkspacePath, relativePath);
   }
 }
+

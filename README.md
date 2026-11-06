@@ -68,12 +68,20 @@ src/
     │   ├── workspace/     # Project containment & path traversal guard
     │   ├── permissions/   # Least-privilege policy & approval checks
     │   └── execution/     # Real OpenCode executor & result verifier
-    └── memory/            # Phase 6 Shared Intelligence & Memory Engine
-        ├── extraction/    # Deterministic extractor & secret validator
-        ├── storage/       # Project-scoped memory repository & service
-        ├── retrieval/     # Text search & explainable ranker
-        ├── context/       # Structured agent context builder
-        └── maintenance/   # Conflict resolution & soft archiver
+    ├── memory/            # Phase 6 Shared Intelligence & Memory Engine
+    │   ├── extraction/    # Deterministic extractor & secret validator
+    │   ├── storage/       # Project-scoped memory repository & service
+    │   ├── retrieval/     # Text search & explainable ranker
+    │   ├── context/       # Structured agent context builder
+    │   └── maintenance/   # Conflict resolution & soft archiver
+    └── security/          # Phase 7 Human Approvals, Permissions & Security
+        ├── permissions/   # 15 action categories, risk calibration (L0-L4)
+        ├── policies/      # Policy engine, separation of duties, default-deny
+        ├── approvals/     # Approval lifecycle, SHA-256 payload digest, API
+        ├── guards/        # ExecutionGuard & ActionGuard runtime enforcement
+        ├── audit/         # Append-only audit trail with secret scrubbing
+        ├── identity/      # Authenticated identity & workspace membership
+        └── notifications/ # Switch room approval alert cards
 
 prisma/
 ├── schema.prisma          # Supabase PostgreSQL relational schema definition
@@ -110,9 +118,10 @@ See [`docs/database.md`](file:///docs/database.md) for the full architectural sp
 - **Conversations & Messages**: `Conversation`, `Message` (Senders: `HUMAN`, `AGENT`, `SYSTEM`)
 - **Switch Integration**: `SwitchEventLog` (Append-only event deduplication and unmapped room diagnostic log)
 - **Decisions**: `Decision` (Project-level persistent decision rationale)
-- **Approvals**: `Approval` (Statuses: `PENDING`, `APPROVED`, `REJECTED`, `EXPIRED`, `CANCELLED`)
+- **Approvals**: `Approval` (Statuses: `PENDING`, `APPROVED`, `REJECTED`, `EXPIRED`, `CANCELLED`; risk levels `L0`..`L4`, action digest, expiration)
 - **Execution Tracking**: `Execution` (Statuses: `QUEUED`, `RUNNING`, `SUCCEEDED`, `FAILED`, `CANCELLED`, `AWAITING_APPROVAL`), `ExecutionEvent` (append-only log)
 - **Persistent Memory**: `MemoryEntry` (Categories: `PROJECT_CONTEXT`, `USER_PREFERENCE`, `DECISION`, `TECHNICAL_KNOWLEDGE`, `TASK_CONTEXT`, `LESSON_LEARNED`)
+- **Security Audit Trail**: `AuditLog` (Append-only trail for permission evaluations, approvals, denials, and blocked operations)
 
 ---
 
@@ -166,7 +175,22 @@ See [`docs/shared-memory-engine.md`](file:///docs/shared-memory-engine.md) for m
 
 ---
 
-## 8. Prerequisites
+## 8. Human Approval, Permission Engine & Security (Phase 7)
+
+See [`docs/security-architecture.md`](file:///docs/security-architecture.md) and [`docs/approval-workflow.md`](file:///docs/approval-workflow.md) for permission architecture, risk taxonomy, approval lifecycle, and audit specifications.
+
+### Key Capabilities
+- **15 Action Categories & 5 Risk Levels**: Rigorous categorization across file, database, command, environment, and deployment operations calibrated from `L0` (READ_ONLY) to `L4` (CRITICAL).
+- **Default-Deny Policy Engine**: Automatic execution gates requiring human review for destructive commands, environment secret mutations, database migrations, and production releases.
+- **Cryptographic Action Digest**: Binds approval records to the exact requested action using canonical SHA-256 hashing. Prevents parameter tampering and execution replay attacks.
+- **Concurrency-Safe Approval Lifecycle**: Enforces atomic state transitions (`PENDING` -> `APPROVED`/`REJECTED`/`EXPIRED`/`CANCELLED`) using transactional row status guards.
+- **Authenticated Identity & Role Enforcement**: Endpoints verify human caller identity and workspace membership role (`OWNER`, `ADMIN`, `MEMBER`); blocks unauthorized reviews and self-approvals.
+- **Switch Notifications**: Automatically posts markdown approval alerts and decision status updates to the project's Switch room.
+- **Append-Only Audit Trail**: Persists comprehensive security evaluations, approval events, and blocked operations with automated secret scrubbing.
+
+---
+
+## 9. Prerequisites
 
 - **Node.js**: `v20+` (tested on Node `v24.x`)
 - **Package Manager**: `npm`

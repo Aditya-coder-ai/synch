@@ -13,13 +13,16 @@ import type { WorkspaceManager } from '../workspace/workspace.manager.js';
 import { ExecutionMonitor } from './execution.monitor.js';
 import { ResultVerifier } from './execution.verifier.js';
 import { OpenCodeUnavailableError } from '../opencode/opencode.errors.js';
-import { AgentRole } from '../../../database/types.js';
+import { AgentRole, ActionCategory } from '../../../database/types.js';
+import { AppError } from '../../../common/errors/app-error.js';
+import type { ExecutionGuard } from '../../security/guards/execution.guard.js';
 
 export interface OpenCodeExecutionProviderOptions {
   client: OpenCodeClient;
   workspaceManager: WorkspaceManager;
   prismaClient?: PrismaClient;
   monitor?: ExecutionMonitor;
+  executionGuard?: ExecutionGuard;
 }
 
 export class OpenCodeExecutionProvider implements AgentExecutionProvider {
@@ -27,6 +30,7 @@ export class OpenCodeExecutionProvider implements AgentExecutionProvider {
   private readonly sessionManager: OpenCodeSessionManager;
   private readonly workspaceManager: WorkspaceManager;
   private readonly monitor: ExecutionMonitor;
+  private readonly executionGuard?: ExecutionGuard;
   private readonly executionToSessionMap = new Map<string, string>();
   private readonly executionStatuses = new Map<string, ExecutionStatus>();
 
@@ -35,6 +39,7 @@ export class OpenCodeExecutionProvider implements AgentExecutionProvider {
     this.sessionManager = new OpenCodeSessionManager(this.client);
     this.workspaceManager = options.workspaceManager;
     this.monitor = options.monitor ?? new ExecutionMonitor({ prismaClient: options.prismaClient });
+    this.executionGuard = options.executionGuard;
   }
 
   /**
@@ -113,6 +118,25 @@ export class OpenCodeExecutionProvider implements AgentExecutionProvider {
     const profile = OpenCodeAgentMapper.getProfile(role);
 
     try {
+      // Pre-execution security verification via ExecutionGuard
+      if (this.executionGuard) {
+        const actionCategory =
+          (input.context?.actionCategory as ActionCategory) || ActionCategory.COMMAND_EXECUTE;
+        await this.executionGuard.assertAuthorized({
+          projectId: input.projectId,
+          executionId: input.executionId,
+          taskId: input.taskId,
+          agentId: input.agentId,
+          action: {
+            category: actionCategory,
+            type: input.title,
+            command: (input.context?.command as string) || input.title,
+            target: (input.context?.target as string) || undefined,
+            payload: input.context,
+          },
+        });
+      }
+
       // 4. Create OpenCode Session
       const session = await this.sessionManager.startSession({
         projectId: input.projectId,
@@ -176,14 +200,28 @@ export class OpenCodeExecutionProvider implements AgentExecutionProvider {
       };
     } catch (err: unknown) {
       const errorMsg = err instanceof Error ? err.message : String(err);
-      this.executionStatuses.set(input.executionId, ExecutionStatus.FAILED);
-      recordStep('EXECUTION_FAILED', `Execution failed: ${errorMsg}`);
+      const isApprovalRequired =
+        err instanceof AppError &&
+        err.code === 'PERMISSION_DENIED' &&
+        (err.details as Record<string, unknown>)?.status === 'AWAITING_APPROVAL';
+
+      const finalStatus = isApprovalRequired
+        ? ExecutionStatus.AWAITING_APPROVAL
+        : ExecutionStatus.FAILED;
+
+      this.executionStatuses.set(input.executionId, finalStatus);
+      recordStep(
+        isApprovalRequired ? 'AWAITING_APPROVAL' : 'EXECUTION_FAILED',
+        isApprovalRequired
+          ? `Execution paused awaiting human approval: ${errorMsg}`
+          : `Execution failed: ${errorMsg}`,
+      );
 
       return {
         executionId: input.executionId,
         taskId: input.taskId,
         agentId: input.agentId,
-        status: ExecutionStatus.FAILED,
+        status: finalStatus,
         error: errorMsg,
         events,
         startedAt,

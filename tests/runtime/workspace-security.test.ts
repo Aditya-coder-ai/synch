@@ -48,3 +48,4 @@ describe('Workspace Security & Path Traversal Guard', () => {
     expect(WorkspaceSecurity.isSensitiveFile('package.json')).toBe(false);
   });
 });
+

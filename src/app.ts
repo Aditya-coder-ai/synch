@@ -19,6 +19,7 @@ import { orchestrationModule } from './modules/orchestration/orchestration.modul
 import type { OrchestrationService } from './modules/orchestration/core/orchestration.service.js';
 import { runtimeModule, type RuntimeModuleOptions } from './modules/runtime/runtime.module.js';
 import { memoryModule, type MemoryModuleOptions } from './modules/memory/memory.module.js';
+import { securityModule, type SecurityModuleOptions } from './modules/security/security.module.js';
 
 export interface BuildAppOptions {
   healthService?: HealthService;
@@ -26,6 +27,7 @@ export interface BuildAppOptions {
   orchestrationService?: OrchestrationService;
   runtimeModuleOptions?: RuntimeModuleOptions;
   memoryModuleOptions?: MemoryModuleOptions;
+  securityModuleOptions?: SecurityModuleOptions;
   logger?: boolean | object;
 }
 
@@ -108,6 +110,10 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
           name: 'Memory',
           description: 'Shared intelligence, semantic memory retrieval, and context construction',
         },
+        {
+          name: 'Security & Approvals',
+          description: 'Human approval workflows, permission evaluations, and security audit trail',
+        },
       ],
     },
     transform: jsonSchemaTransform,
@@ -147,6 +153,11 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
       await v1.register(runtimeModule, options.runtimeModuleOptions ?? {});
 
       await v1.register(memoryModule, options.memoryModuleOptions ?? {});
+
+      await v1.register(securityModule, {
+        switchService: options.switchService,
+        ...options.securityModuleOptions,
+      });
     },
     { prefix: '/api/v1' },
   );

@@ -92,3 +92,4 @@ describe('OpenCodeClient', () => {
     await expect(client.getSession('ses_invalid')).rejects.toThrow(OpenCodeConnectionError);
   });
 });
+

@@ -76,3 +76,4 @@ export const runtimeModule: FastifyPluginAsync<RuntimeModuleOptions> = async (
   // Decorate fastify with execution provider for downstream access
   fastify.decorate('executionProvider', provider);
 };
+

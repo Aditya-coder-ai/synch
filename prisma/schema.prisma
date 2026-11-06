@@ -178,6 +178,7 @@ model Project {
   executions     Execution[]
   memoryEntries  MemoryEntry[]
   orchestrations Orchestration[]
+  auditLogs      AuditLog[]
 
   @@index([workspaceId, status])
   @@index([workspaceId, createdAt])
@@ -357,11 +358,16 @@ model Approval {
   executionId        String?
   requestedByAgentId String?
   actionType         String
+  actionCategory     String         @default("COMMAND_EXECUTE")
+  riskLevel          String         @default("L2")
+  actionDigest       String?
   description        String
   status             ApprovalStatus @default(PENDING)
   payload            Json           @default("{}")
   reviewedByUserId   String?
   reviewedAt         DateTime?
+  decisionReason     String?
+  expiresAt          DateTime?
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
 
@@ -373,6 +379,7 @@ model Approval {
   reviewedByUser   User?      @relation("UserReviewedApprovals", fields: [reviewedByUserId], references: [id], onDelete: SetNull)
 
   @@index([projectId, status])
+  @@index([projectId, status, expiresAt])
   @@index([taskId])
   @@index([executionId])
 }
@@ -492,4 +499,35 @@ model OrchestrationEvent {
 
   @@index([orchestrationId, createdAt])
   @@index([eventType])
+}
+
+// ==============================================================================
+// MODELS: SECURITY AUDIT TRAIL (PHASE 7)
+// ==============================================================================
+
+model AuditLog {
+  id             String    @id @default(cuid())
+  actorId        String?
+  actorType      String    @default("SYSTEM") // HUMAN, AGENT, SYSTEM
+  workspaceId    String?
+  projectId      String?
+  actionCategory String
+  actionType     String
+  riskLevel      String    @default("L0")
+  outcome        String    // ALLOWED, APPROVAL_REQUIRED, DENIED, APPROVED, REJECTED, EXPIRED, CANCELLED, BLOCKED
+  reason         String?
+  resourceId     String?
+  metadata       Json      @default("{}")
+  ipAddress      String?
+  userAgent      String?
+  createdAt      DateTime  @default(now())
+
+  // Relations
+  project Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([projectId, createdAt])
+  @@index([actorId, createdAt])
+  @@index([actionCategory])
+  @@index([outcome])
+  @@index([createdAt])
 }

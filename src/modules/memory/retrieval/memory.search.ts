@@ -50,3 +50,4 @@ export class PostgresTextSearchProvider implements IMemorySearchProvider {
     });
   }
 }
+

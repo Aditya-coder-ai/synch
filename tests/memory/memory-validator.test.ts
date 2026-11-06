@@ -63,3 +63,4 @@ describe('Memory Validator & Secret Filtering', () => {
     expect(result.sanitizedMemory?.content).not.toContain('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.token123');
   });
 });
+

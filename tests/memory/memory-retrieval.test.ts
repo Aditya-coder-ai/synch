@@ -84,3 +84,4 @@ describe('Memory Retrieval & Cross-Project Isolation', () => {
     expect(topMatch.matchReasons.some(r => r.includes('Verified fact'))).toBe(true);
   });
 });
+

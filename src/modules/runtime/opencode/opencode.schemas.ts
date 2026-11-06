@@ -67,3 +67,4 @@ export type CreateSessionRequest = z.infer<typeof createSessionRequestSchema>;
 export type SessionResponse = z.infer<typeof sessionResponseSchema>;
 export type SendMessageRequest = z.infer<typeof sendMessageRequestSchema>;
 export type SessionDiffResponse = z.infer<typeof sessionDiffResponseSchema>;
+

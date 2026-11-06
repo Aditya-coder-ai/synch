@@ -102,3 +102,4 @@ WORKSPACE_ROOT_PATH=./workspaces
 ```
 
 Switching between `MOCK` and `OPENCODE` is fully governed by `EXECUTION_PROVIDER`. If `OPENCODE` is selected and the server is unreachable, the execution safely fails with an `OpenCodeUnavailableError` without silently falling back to mock.
+

@@ -89,3 +89,4 @@ Before an agent executes a task, `ContextBuilder` constructs a `StructuredAgentC
 | `POST` | `/api/v1/memory` | Stores a validated candidate memory with duplicate detection. |
 | `GET` | `/api/v1/projects/:projectId/memory` | Retrieves and ranks memories for a project by keywords and category. |
 | `GET` | `/api/v1/projects/:projectId/context` | Assembles a structured execution context payload for a given task. |
+

@@ -53,3 +53,4 @@ export interface RankedMemory {
   score: number; // 0 to 100
   matchReasons: string[];
 }
+

@@ -112,3 +112,4 @@ export class OpenCodeSessionManager {
     return Array.from(this.activeSessions.values()).filter(s => s.active);
   }
 }
+

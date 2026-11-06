@@ -37,3 +37,4 @@ describe('Memory Classifier', () => {
     expect(result.category).toBe(MemoryCategory.TECHNICAL_KNOWLEDGE);
   });
 });
+

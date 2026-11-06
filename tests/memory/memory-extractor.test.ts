@@ -61,3 +61,4 @@ Some random short line
     expect(candidates.some(c => c.category === MemoryCategory.USER_PREFERENCE)).toBe(true);
   });
 });
+
