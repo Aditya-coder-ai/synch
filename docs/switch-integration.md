@@ -158,10 +158,30 @@ Add the following to your `.env` file:
 
 ## 5. Switch Console & Local Setup Guide
 
-1. **Install Switch Console & Server**:
-   Refer to Switch documentation to run the local server or Docker container:
+Switch is open-source at [`sandbox-quantum/switch`](https://github.com/sandbox-quantum/switch) and operates as a coordinated multi-container stack (Switch Core, PostgreSQL, and messaging bridges like Mattermost or Slack) managed via Docker Compose. There is no single standalone `switchagents/server:latest` image on Docker Hub.
+
+### Running Switch Locally via Docker Compose
+
+1. **Clone the Switch repository in a separate directory**:
    ```bash
-   docker run -p 8080:8080 switchagents/server:latest
+   git clone https://github.com/sandbox-quantum/switch.git
+   cd switch
+   ```
+
+2. **Initialize configuration and start the stack**:
+   If using the `just` task runner:
+   ```bash
+   just init-env
+   just standalone-up
+   ```
+   Or directly with Docker Compose:
+   ```bash
+   docker compose -f docker-compose.standalone.yml up -d
+   ```
+
+3. **Verify Switch Bridge Connectivity**:
+   ```bash
+   curl http://localhost:8080/health
    ```
 
 2. **Register CrewFlow Platform Agent**:
