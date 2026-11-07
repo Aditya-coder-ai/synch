@@ -90,10 +90,10 @@ export class OrchestrationStreamService {
    * Attaches an incoming HTTP request/reply to a live SSE stream.
    */
   public async handleSSEStream(
-    request: FastifyRequest<{ Params: { id: string } }>,
+    request: FastifyRequest<any>,
     reply: FastifyReply,
   ): Promise<void> {
-    const orchestrationId = request.params.id;
+    const orchestrationId = (request.params as { id: string }).id;
 
     // Verify orchestration exists and fetch backlog
     const { chunks: backlog, status } = await this.getBacklog(orchestrationId);

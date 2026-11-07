@@ -89,7 +89,7 @@ export class ExecutionManager {
    * Runs all tasks in dependency order until completion or unresolvable failure.
    */
   async executeAll(
-    tasks: { id: string; title: string; description: string | null; projectId: string; orchestrationId?: string; assignedAgentId: string | null; requiredCapabilities?: string[] }[],
+    tasks: { id: string; title: string; description: string | null; projectId: string; orchestrationId?: string | null; assignedAgentId: string | null; requiredCapabilities?: string[] }[],
     graph: DependencyGraph,
   ): Promise<{
     completedTaskIds: string[];
