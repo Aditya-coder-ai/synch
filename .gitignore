@@ -29,6 +29,9 @@ coverage/
 prisma/*.db
 prisma/*.db-journal
 
+# Legacy frontend folder
+frontend/
+
 # OS & Editor
 .DS_Store
 Thumbs.db
