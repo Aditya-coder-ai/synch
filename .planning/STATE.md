@@ -1,21 +1,29 @@
 # CrewFlow Project State
 
-## Active Milestone: Milestone 1 - Platform Foundation & Core Services
-## Completed Phase: Phase 3 - Switch Integration
-**Status**: Completed, Tested, and Documented
-**Last Updated**: 2026-11-06
+## Completed Milestone: Milestone 1 - Platform Foundation & Core Autonomous Execution Engine
+**Status**: 100% Completed, Fully Tested (196 tests passing across 38 files), and Production Redesigned
+**Last Updated**: 2026-11-07
 
-### Key Decisions Made in Phase 3
-1. **Official Switch Protocol Compliance**: Queried live documentation from `https://docs.switchagents.ai/mcp`. Built client around the wire contract: WebSocket connection at `/agents/{agent_id}/connection/ws` with Bearer auth, periodic pings, and outbound messaging via `/agents/{agent_id}/message`.
-2. **Safe Inbound Pipeline**: Implemented strict validation, participant resolution (`@switch-user-*` -> `HUMAN`, `@switch-agent-*` -> `AGENT`, `@switch-admin` -> `SYSTEM`), echo-loop prevention, and idempotent deduplication.
-3. **Database Safeguards**:
-   - Added `externalMessageId` unique constraint on `Message`.
-   - Created `SwitchEventLog` table for tracking event status (`PROCESSED`, `DUPLICATE`, `UNMAPPED_ROOM`, `ERROR`).
-   - Unmapped rooms trigger a diagnostic log entry rather than attaching to an arbitrary project.
-4. **Resilient Connection Lifecycle**:
-   - Connection manager tracks state (`DISCONNECTED`, `CONNECTING`, `CONNECTED`, `RECONNECTING`, `ERROR`).
-   - Exponential backoff with jitter prevents thundering herd.
-   - Clean shutdown with `onClose` hook prevents hanging socket or streams.
-5. **Architectural Isolation**:
-   - Kept Switch-specific wire protocol isolated from CrewFlow business logic.
-   - Maintained strict distinction between CrewFlow backend (platform bridge) and future OpenCode execution provider.
+### Summary of Completed Phases (1–7 + Frontend)
+1. **Phase 1: Backend Foundation**: Fastify server, Zod env validation, Prisma client, standardized errors, health probes, Swagger OpenAPI docs, Vitest runner.
+2. **Phase 2: Database Architecture**: 14 PostgreSQL models, relational constraints, enum classifications, initial database migrations, repository access layer.
+3. **Phase 3: Switch Integration**: Official Switch Agent wire protocol client, inbound normalization, deduplication logging, echo prevention, room mapping.
+4. **Phase 4: Agent Orchestration Engine**: Coordinator entrypoint, deterministic planning provider, specialist agent registry, topological DAG scheduler, state machine.
+5. **Phase 5: OpenCode Agent Runtime**: Dedicated runtime module, OpenCode HTTP client (`opencode serve` v1.19.5), workspace sandbox isolation, diff/result verification.
+6. **Phase 6: Shared Intelligence Engine**: 6 memory categories, semantic and relational retrieval, explainable scoring, project context builder, execution event auto-extraction.
+7. **Phase 7: Human Approval, Permission Engine & Security**: 15 action categories, L0–L4 risk classification, default-deny policy engine, SHA-256 payload digest binding, approval service, PostgreSQL `AuditLog`, Switch notification bridge.
+8. **Frontend Integration & Hallmark Redesign**: Complete Vite + React frontend wired to Fastify backend API (`/api/v1`), Hallmark Console theme redesign, 0 FAIL / 0 REFLEX / 0 WARN on sloplint, 31/31 interactive handlers preserved.
+
+---
+
+## Active Milestone: Milestone 2 - Production SaaS Readiness, Real-Time Streaming & Visual Canvas
+
+### Upcoming Phases
+- **Phase 8: Real-Time Execution Streaming (SSE / WebSockets for Frontend)**: Live stdout/stderr stream from OpenCode runtime to UI console without polling.
+- **Phase 9: Visual Workflow Canvas (React Flow Visual Node Graph)**: Drag-and-drop workflow visual graph editor in Workflow Studio.
+- **Phase 10: Authentication, Multi-Tenancy & Workspace Switcher**: Full Login/Sign-up UI, multi-tenant workspace modal, RBAC.
+- **Phase 11: Public API Expansion, Webhooks & Observability**: Outgoing webhooks, Prometheus `/metrics`, OpenTelemetry tracing, rate limiting.
+- **Phase 12: Production Deployment, Containerization & CI/CD**: Multi-stage Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD.
+
+### Immediate Next Step
+- **Phase 8 Planning & Implementation**: Server-Sent Events (SSE) route `GET /api/v1/orchestrations/:id/stream` and live frontend console stream integration.
