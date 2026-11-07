@@ -328,3 +328,4 @@ export function MemoryHubView({ memories, onRefreshMemories }: MemoryHubViewProp
     </div>
   );
 }
+

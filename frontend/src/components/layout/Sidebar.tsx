@@ -114,7 +114,7 @@ export function Sidebar({
 
       <div className="p-4 border-t border-[var(--color-rule)] bg-[var(--color-paper)]">
         <div className="flex items-center justify-between text-xs text-[var(--color-muted)] font-mono">
-          <span>PostgreSQL · Prisma</span>
+          <span>PostgreSQL and Prisma</span>
           <span className="text-[var(--color-ok)]">connected</span>
         </div>
         <div className="mt-2 text-xs text-[var(--color-muted)]">

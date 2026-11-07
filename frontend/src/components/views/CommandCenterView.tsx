@@ -297,7 +297,7 @@ export function CommandCenterView({
                     streamLogs.map((log, index) => (
                       <div key={log.id || index} className="flex items-start gap-2 leading-relaxed">
                         <span className="text-[var(--color-muted)] shrink-0 select-none text-[11px]">
-                          {log.timestamp ? log.timestamp.split('T')[1]?.slice(0, 8) : '--:--:--'}
+                          {log.timestamp ? `${log.timestamp.split('T')[1]?.slice(0, 8)} UTC` : '--:--:-- UTC'}
                         </span>
                         <span
                           className={`shrink-0 text-[11px] px-1 rounded ${

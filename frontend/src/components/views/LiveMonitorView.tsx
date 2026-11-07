@@ -237,7 +237,7 @@ export function LiveMonitorView({
                   className="flex items-start gap-2.5 leading-relaxed hover:bg-[var(--color-paper-2)]/30 px-1 py-0.5 rounded"
                 >
                   <span className="text-[11px] text-[var(--color-muted)] shrink-0 select-none">
-                    {chunk.timestamp ? chunk.timestamp.split('T')[1]?.slice(0, 8) : '--:--:--'}
+                    {chunk.timestamp ? `${chunk.timestamp.split('T')[1]?.slice(0, 8)} UTC` : '--:--:-- UTC'}
                   </span>
                   <span
                     className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded font-mono ${
@@ -269,3 +269,4 @@ export function LiveMonitorView({
     </div>
   );
 }
+

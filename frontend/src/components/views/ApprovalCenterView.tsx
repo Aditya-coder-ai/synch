@@ -165,7 +165,7 @@ export function ApprovalCenterView({
 
                   <div className="mt-3 pt-2 border-t border-[var(--color-rule)] flex items-center justify-between text-[11px] font-mono text-[var(--color-muted)]">
                     <span>id: {item.id}</span>
-                    <span>created: {item.createdAt ? item.createdAt.slice(0, 19).replace('T', ' ') : 'now'}</span>
+                    <span>created: {item.createdAt ? `${item.createdAt.slice(0, 19).replace('T', ' ')} UTC` : 'now'}</span>
                   </div>
                 </div>
               ))
