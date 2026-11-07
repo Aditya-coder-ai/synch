@@ -123,18 +123,20 @@ export default function AppShell({ onSignOut }: AppShellProps) {
     return approvals.filter((a) => a.status === 'pending').length
   }, [approvals])
 
-  const handleApprove = (id: string) => {
+  const handleApprove = async (id: string) => {
     setApprovals((prev) =>
       prev.map((item) => (item.id === id ? { ...item, status: 'approved' as const } : item))
     )
-    setNotice(`Checkpoint ${id} authorized. Execution resumed.`)
+    const result = await endpoints.approveAction(id)
+    setNotice(result.message || `Checkpoint ${id} authorized. Execution resumed.`)
   }
 
-  const handleReject = (id: string) => {
+  const handleReject = async (id: string) => {
     setApprovals((prev) =>
       prev.map((item) => (item.id === id ? { ...item, status: 'rejected' as const } : item))
     )
-    setNotice(`Checkpoint ${id} rejected by operator. Work halted.`)
+    const result = await endpoints.rejectAction(id)
+    setNotice(result.message || `Checkpoint ${id} rejected by operator. Work halted.`)
   }
 
   const handleToggleAgent = (id: string) => {
@@ -342,6 +344,7 @@ export default function AppShell({ onSignOut }: AppShellProps) {
               {activeView === 'integrations' && (
                 <IntegrationsView
                   integrations={integrations}
+                  onRefresh={loadAllData}
                   onNotice={setNotice}
                 />
               )}
@@ -529,24 +532,26 @@ function CommandView({
   const [compiling, setCompiling] = useState(false)
   const [generatedPlan, setGeneratedPlan] = useState<string[] | null>(null)
 
-  const handleRun = () => {
+  const handleRun = async () => {
     if (!command.trim()) {
       onNotice('Please enter an objective before dispatching.')
       return
     }
     setCompiling(true)
-    onNotice('Compiling task dependency graph and assigning agents...')
-    setTimeout(() => {
+    onNotice('Compiling task dependency graph and querying orchestration engine...')
+    try {
+      const res = await endpoints.dispatchOrchestration(command)
       setCompiling(false)
-      setGeneratedPlan([
-        '01 / Parse AST & verify endpoints for vulnerability vectors',
-        '02 / Isolate OpenCode sandbox container and inject memory context',
-        '03 / Execute patch generation with Claude 3.5 Sonnet',
-        '04 / Assert deterministic verification tests (Vitest test suite)',
-        '05 / Operator approval barrier: Authorize code commit',
-      ])
-      onNotice('Execution DAG scheduled successfully.')
-    }, 1200)
+      if (res.success && res.plan) {
+        setGeneratedPlan(res.plan)
+        onNotice(`Execution DAG scheduled (${res.orchestrationId}).`)
+      } else {
+        onNotice(res.error || 'Failed to dispatch orchestration.')
+      }
+    } catch {
+      setCompiling(false)
+      onNotice('Orchestration dispatch encountered an issue.')
+    }
   }
 
   return (
@@ -1082,9 +1087,11 @@ function MemoryView({
 
 function IntegrationsView({
   integrations,
+  onRefresh,
   onNotice,
 }: {
   integrations: IntegrationRecord[]
+  onRefresh: () => void
   onNotice: (msg: string) => void
 }) {
   return (
@@ -1097,7 +1104,10 @@ function IntegrationsView({
         <button
           type="button"
           className="btn btn--subtle"
-          onClick={() => onNotice('All integration diagnostics re-run: 4/4 services reporting healthy.')}
+          onClick={() => {
+            onRefresh()
+            onNotice('Re-pinged live cluster endpoints: OpenCode, Switch, DB, CI/CD updated.')
+          }}
         >
           <RefreshCw size={14} /> Run cluster diagnostics
         </button>
