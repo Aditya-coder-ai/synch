@@ -5,11 +5,13 @@ import { OrchestrationService } from './core/orchestration.service.js';
 import { Orchestrator } from './core/orchestrator.js';
 import { OrchestrationEventHandler } from './events/orchestration-event-handler.js';
 import { orchestrationRoutes } from './orchestration.routes.js';
+import { OrchestrationStreamService } from './stream/stream.service.js';
 
 export interface OrchestrationModuleOptions {
   prismaClient?: PrismaClient;
   switchService?: SwitchService;
   orchestrationService?: OrchestrationService;
+  streamService?: OrchestrationStreamService;
 }
 
 export const orchestrationModule: FastifyPluginAsync<OrchestrationModuleOptions> = async (
@@ -36,6 +38,7 @@ export const orchestrationModule: FastifyPluginAsync<OrchestrationModuleOptions>
   await fastify.register(orchestrationRoutes, {
     prefix: '/orchestrations',
     orchestrationService,
+    streamService: options.streamService,
   });
 };
 

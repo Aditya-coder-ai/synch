@@ -86,6 +86,15 @@ export interface RuntimeStatus {
   activeSessions: number;
 }
 
+export interface StreamChunk {
+  id: string;
+  orchestrationId: string;
+  eventType: string;
+  message: string;
+  data: Record<string, unknown>;
+  timestamp: string;
+}
+
 class ApiClient {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const url = `${API_BASE}${endpoint}`;
@@ -197,6 +206,58 @@ class ApiClient {
    */
   async getRuntimeHealth(): Promise<{ data: RuntimeStatus }> {
     return this.request<{ data: RuntimeStatus }>('/runtime/health');
+  }
+
+  /**
+   * Connects to live Server-Sent Events (SSE) execution stream.
+   * Dispatches chunks to onChunk callback. Returns unsubscription cleanup function.
+   */
+  streamOrchestration(
+    orchestrationId: string,
+    onChunk: (chunk: StreamChunk) => void,
+    onError?: (error: Event) => void,
+  ): () => void {
+    const url = `${API_BASE}/orchestrations/${encodeURIComponent(orchestrationId)}/stream`;
+    const eventSource = new EventSource(url);
+
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data) as StreamChunk;
+        onChunk(data);
+      } catch {
+        // Fallback for non-JSON lines
+      }
+    };
+
+    const eventTypes = [
+      'connected',
+      'orchestration:event',
+      'task:status',
+      'runtime:stdout',
+      'runtime:stderr',
+      'approval:requested',
+      'orchestration:completed',
+      'orchestration:failed',
+    ];
+
+    eventTypes.forEach((type) => {
+      eventSource.addEventListener(type, (event: MessageEvent) => {
+        try {
+          const data = JSON.parse(event.data) as StreamChunk;
+          onChunk(data);
+        } catch {
+          // Fallback
+        }
+      });
+    });
+
+    eventSource.onerror = (err) => {
+      if (onError) onError(err);
+    };
+
+    return () => {
+      eventSource.close();
+    };
   }
 }
 

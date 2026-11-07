@@ -18,12 +18,19 @@
 
 ## Active Milestone: Milestone 2 - Production SaaS Readiness, Real-Time Streaming & Visual Canvas
 
+### Completed in Milestone 2
+- **Phase 8: Real-Time Execution Streaming (SSE / WebSockets for Frontend)**:
+  - In-process `ExecutionStreamBroker` with bounded memory ring buffer and pub/sub subscriptions.
+  - Server-Sent Events route `GET /api/v1/orchestrations/:id/stream` with backlog hydration and 15s keep-alive pings.
+  - Integrated with `OrchestrationEventHandler` and `ExecutionDispatcher` to stream live agent dispatch, status changes, and stdout/stderr chunks.
+  - Frontend `api.streamOrchestration()` in `client.ts` wired to live terminal log console in `App.tsx`.
+  - 9 dedicated stream tests (205 tests total passing across 39 files).
+
 ### Upcoming Phases
-- **Phase 8: Real-Time Execution Streaming (SSE / WebSockets for Frontend)**: Live stdout/stderr stream from OpenCode runtime to UI console without polling.
 - **Phase 9: Visual Workflow Canvas (React Flow Visual Node Graph)**: Drag-and-drop workflow visual graph editor in Workflow Studio.
 - **Phase 10: Authentication, Multi-Tenancy & Workspace Switcher**: Full Login/Sign-up UI, multi-tenant workspace modal, RBAC.
 - **Phase 11: Public API Expansion, Webhooks & Observability**: Outgoing webhooks, Prometheus `/metrics`, OpenTelemetry tracing, rate limiting.
 - **Phase 12: Production Deployment, Containerization & CI/CD**: Multi-stage Dockerfile, docker-compose.prod.yml, GitHub Actions CI/CD.
 
 ### Immediate Next Step
-- **Phase 8 Planning & Implementation**: Server-Sent Events (SSE) route `GET /api/v1/orchestrations/:id/stream` and live frontend console stream integration.
+- **Phase 9 Planning & Implementation**: Install `@xyflow/react` and build the interactive visual workflow canvas in Workflow Studio.

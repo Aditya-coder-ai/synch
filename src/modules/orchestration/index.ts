@@ -28,6 +28,10 @@ export * from './execution/execution-manager.js';
 export * from './events/orchestration-events.js';
 export * from './events/orchestration-event-handler.js';
 
+export * from './stream/stream.types.js';
+export * from './stream/stream.broker.js';
+export * from './stream/stream.service.js';
+
 export * from './policies/orchestration-policy.js';
 
 export * from './orchestration.routes.js';

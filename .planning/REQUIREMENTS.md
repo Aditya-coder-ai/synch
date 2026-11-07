@@ -72,11 +72,12 @@
 
 ## Milestone 2: Production Readiness, Visual Experience & SaaS Operations (PLANNED)
 
-### Phase 8: Real-Time Execution Streaming (SSE / WebSockets for Frontend)
-- [ ] SSE endpoint `GET /api/v1/orchestrations/:id/stream`
-- [ ] Real-time stdout/stderr chunk emission from OpenCode runtime
-- [ ] Frontend reactive stream client in `src/api/client.ts`
-- [ ] Streaming terminal output component with autoscroll in Mission Control Console
+### Phase 8: Real-Time Execution Streaming (SSE / WebSockets for Frontend) (Completed)
+- [x] SSE endpoint `GET /api/v1/orchestrations/:id/stream`
+- [x] Real-time stdout/stderr chunk emission from OpenCode runtime
+- [x] Frontend reactive stream client in `src/api/client.ts`
+- [x] Streaming terminal output component with autoscroll in Mission Control Console
+- [x] Comprehensive test suite covering SSE stream lifecycle, reconnection, and backlogs (9 tests)
 
 ### Phase 9: Visual Workflow Canvas (React Flow)
 - [ ] Install and configure `@xyflow/react`

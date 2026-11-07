@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   Activity,
   ArrowUpRight,
@@ -166,6 +166,30 @@ function App() {
   const [approvals, setApprovals] = useState<ApprovalItem[]>([])
   const [memories, setMemories] = useState<MemoryItem[]>([])
 
+  // Live Stream State (Phase 8 SSE)
+  const [streamLogs, setStreamLogs] = useState<Array<{ id: string; time: string; text: string }>>([
+    { id: 'log_init', time: 'ready', text: 'SSE execution stream standing by' },
+  ])
+  const [isStreaming, setIsStreaming] = useState(false)
+  const streamCleanupRef = useRef<(() => void) | null>(null)
+  const terminalRef = useRef<HTMLDivElement>(null)
+
+  const appendLog = (text: string) => {
+    const time = new Date().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    setStreamLogs(prev => [...prev.slice(-25), { id: `log_${Date.now()}_${Math.random()}`, time, text }])
+    setTimeout(() => {
+      terminalRef.current?.scrollTo({ top: terminalRef.current.scrollHeight, behavior: 'smooth' })
+    }, 50)
+  }
+
+  useEffect(() => {
+    return () => {
+      if (streamCleanupRef.current) {
+        streamCleanupRef.current()
+      }
+    }
+  }, [])
+
   useEffect(() => {
     api.getHealth()
       .then(res => setBackendHealth(res.data))
@@ -224,8 +248,44 @@ function App() {
       const res = await api.startOrchestration(defaultObjective)
       setLiveOrchestration(res.data)
       setNotice(`Orchestration active: ${res.data.tasksCount} tasks planned across ${res.data.assignedAgents.length} agents.`)
+
+      if (streamCleanupRef.current) streamCleanupRef.current()
+      setIsStreaming(true)
+      appendLog(`Connecting to live stream for session ${res.data.orchestrationId}...`)
+
+      streamCleanupRef.current = api.streamOrchestration(
+        res.data.orchestrationId,
+        (chunk) => {
+          appendLog(chunk.message)
+          if (chunk.eventType === 'orchestration:completed') {
+            setIsStreaming(false)
+            setActiveStep(5)
+          }
+        },
+        () => {
+          setIsStreaming(false)
+        },
+      )
     } catch {
       setNotice('Running local execution demonstration.')
+      setIsStreaming(true)
+      const simMessages = [
+        'Connected to OpenCode server v1.19.5',
+        'Topological scheduler allocated 4 tasks across 3 agents',
+        'Task 1: Parsing competitor landscape verified in sandbox',
+        'Task 2: Compiling differentiation matrix',
+        'Task 3: Running fact-checking and policy verification',
+        'Orchestration completed with all verification criteria met',
+      ]
+      simMessages.forEach((msg, idx) => {
+        setTimeout(() => {
+          appendLog(msg)
+          if (idx === simMessages.length - 1) {
+            setIsStreaming(false)
+            setActiveStep(5)
+          }
+        }, (idx + 1) * 750)
+      })
     }
   }
 
@@ -239,7 +299,7 @@ function App() {
     setCommand('')
     setActiveStep(0)
     setPreviewRunning(true)
-    setNotice(`Submitting objective to Coordinator...`)
+    setNotice('Submitting objective to Coordinator...')
     scrollTo('product')
 
     try {
@@ -247,6 +307,24 @@ function App() {
       setLiveOrchestration(res.data)
       setNotice(`Orchestration active: ${res.data.tasksCount} tasks decomposed and scheduled.`)
       setActiveStep(1)
+
+      if (streamCleanupRef.current) streamCleanupRef.current()
+      setIsStreaming(true)
+      appendLog(`Connecting to live stream for session ${res.data.orchestrationId}...`)
+
+      streamCleanupRef.current = api.streamOrchestration(
+        res.data.orchestrationId,
+        (chunk) => {
+          appendLog(chunk.message)
+          if (chunk.eventType === 'orchestration:completed') {
+            setIsStreaming(false)
+            setActiveStep(5)
+          }
+        },
+        () => {
+          setIsStreaming(false)
+        },
+      )
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err)
       setNotice(`Orchestrator: ${msg}`)
@@ -443,6 +521,23 @@ function App() {
                         </div>
                       )
                     })}
+                  </div>
+                </div>
+
+                <div className="console-stream-panel">
+                  <div className="stream-meta-row">
+                    <span>stream telemetry (SSE)</span>
+                    <span className={`stream-badge ${isStreaming ? 'active' : ''}`}>
+                      {isStreaming ? 'streaming active' : 'stream idle'}
+                    </span>
+                  </div>
+                  <div className="stream-log-rows" ref={terminalRef}>
+                    {streamLogs.map((log) => (
+                      <div key={log.id} className="stream-line">
+                        <span className="stream-time">[{log.time}]</span>
+                        <span className="stream-text">{log.text}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
 

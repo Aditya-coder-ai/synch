@@ -3,9 +3,14 @@ import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { z } from 'zod';
 import { orchestrationRequestSchema } from './planner/planner.schemas.js';
 import { OrchestrationService } from './core/orchestration.service.js';
+import {
+  OrchestrationStreamService,
+  orchestrationStreamService,
+} from './stream/stream.service.js';
 
 export interface OrchestrationRoutesOptions {
   orchestrationService?: OrchestrationService;
+  streamService?: OrchestrationStreamService;
 }
 
 export const orchestrationRoutes: FastifyPluginAsync<OrchestrationRoutesOptions> = async (
@@ -14,6 +19,7 @@ export const orchestrationRoutes: FastifyPluginAsync<OrchestrationRoutesOptions>
 ): Promise<void> => {
   const app = fastify.withTypeProvider<ZodTypeProvider>();
   const service = options.orchestrationService ?? new OrchestrationService();
+  const streamService = options.streamService ?? orchestrationStreamService;
 
   // POST /api/v1/orchestrations - Start a new orchestration run
   app.post(
@@ -95,6 +101,24 @@ export const orchestrationRoutes: FastifyPluginAsync<OrchestrationRoutesOptions>
         success: true,
         data: events as unknown as Record<string, unknown>[],
       });
+    },
+  );
+
+  // GET /api/v1/orchestrations/:id/stream - Live Server-Sent Events (SSE) stream
+  app.get(
+    '/:id/stream',
+    {
+      schema: {
+        summary: 'Stream Live Orchestration Events (SSE)',
+        description: 'Server-Sent Events (SSE) stream delivering real-time task progression, stdout, stderr, and execution state.',
+        tags: ['Orchestration'],
+        params: z.object({
+          id: z.string().trim().min(1),
+        }),
+      },
+    },
+    async (request, reply) => {
+      await streamService.handleSSEStream(request, reply);
     },
   );
 

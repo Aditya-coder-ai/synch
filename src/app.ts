@@ -17,6 +17,7 @@ import { switchModule } from './modules/switch/switch.module.js';
 import type { SwitchService } from './modules/switch/switch.service.js';
 import { orchestrationModule } from './modules/orchestration/orchestration.module.js';
 import type { OrchestrationService } from './modules/orchestration/core/orchestration.service.js';
+import type { OrchestrationStreamService } from './modules/orchestration/stream/stream.service.js';
 import { runtimeModule, type RuntimeModuleOptions } from './modules/runtime/runtime.module.js';
 import { memoryModule, type MemoryModuleOptions } from './modules/memory/memory.module.js';
 import { securityModule, type SecurityModuleOptions } from './modules/security/security.module.js';
@@ -25,6 +26,7 @@ export interface BuildAppOptions {
   healthService?: HealthService;
   switchService?: SwitchService;
   orchestrationService?: OrchestrationService;
+  orchestrationStreamService?: OrchestrationStreamService;
   runtimeModuleOptions?: RuntimeModuleOptions;
   memoryModuleOptions?: MemoryModuleOptions;
   securityModuleOptions?: SecurityModuleOptions;
@@ -147,6 +149,7 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
 
       await v1.register(orchestrationModule, {
         orchestrationService: options.orchestrationService,
+        streamService: options.orchestrationStreamService,
         switchService: options.switchService,
       });
 
