@@ -86,6 +86,20 @@ export interface RuntimeStatus {
   activeSessions: number;
 }
 
+export interface SwitchStatus {
+  enabled: boolean;
+  connectionState: string;
+  transport: string;
+  agentId: string;
+  connectionId: string;
+  lastConnectedAt: string | null;
+  lastDisconnectedAt: string | null;
+  lastReceivedAt: string | null;
+  lastSentAt: string | null;
+  lastError: string | null;
+  reconnectAttempts: number;
+}
+
 export interface StreamChunk {
   id: string;
   orchestrationId: string;
@@ -93,6 +107,20 @@ export interface StreamChunk {
   message: string;
   data: Record<string, unknown>;
   timestamp: string;
+}
+
+export interface ContextPayload {
+  projectId: string;
+  taskId: string;
+  taskTitle: string;
+  retrievedMemoriesCount: number;
+  markdown: string;
+  memories: Array<{
+    id: string;
+    category: string;
+    title: string;
+    content: string;
+  }>;
 }
 
 class ApiClient {
@@ -206,6 +234,71 @@ class ApiClient {
    */
   async getRuntimeHealth(): Promise<{ data: RuntimeStatus }> {
     return this.request<{ data: RuntimeStatus }>('/runtime/health');
+  }
+
+  /**
+   * Cancels an active orchestration run.
+   */
+  async cancelOrchestration(id: string, reason?: string): Promise<{ data: Record<string, unknown> }> {
+    return this.request<{ data: Record<string, unknown> }>(`/orchestrations/${id}/cancel`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    });
+  }
+
+  /**
+   * Creates a new shared memory record.
+   */
+  async createMemory(payload: {
+    projectId?: string;
+    category: string;
+    title: string;
+    content: string;
+    sourceType?: string;
+    tags?: string[];
+  }): Promise<{ data: MemoryItem }> {
+    return this.request<{ data: MemoryItem }>('/memory', {
+      method: 'POST',
+      body: JSON.stringify({
+        projectId: payload.projectId || 'proj-default',
+        category: payload.category,
+        title: payload.title,
+        content: payload.content,
+        sourceType: payload.sourceType || 'MANUAL',
+        tags: payload.tags || [],
+      }),
+    });
+  }
+
+  /**
+   * Retrieves compiled execution context for a task.
+   */
+  async getProjectContext(
+    projectId: string = 'proj-default',
+    options: { taskId?: string; taskTitle?: string; keywords?: string[] } = {},
+  ): Promise<{ data: ContextPayload }> {
+    const params = new URLSearchParams();
+    if (options.taskId) params.set('taskId', options.taskId);
+    if (options.taskTitle) params.set('taskTitle', options.taskTitle);
+    if (options.keywords && options.keywords.length > 0) {
+      params.set('keywords', options.keywords.join(','));
+    }
+    const qs = params.toString() ? `?${params.toString()}` : '';
+    return this.request<{ data: ContextPayload }>(`/projects/${projectId}/context${qs}`);
+  }
+
+  /**
+   * Fetches Switch integration status.
+   */
+  async getSwitchStatus(): Promise<{ data: SwitchStatus }> {
+    return this.request<{ data: SwitchStatus }>('/integrations/switch/status');
+  }
+
+  /**
+   * Probes Switch health connectivity.
+   */
+  async getSwitchHealth(): Promise<{ data: { ok: boolean; status: number; message: string } }> {
+    return this.request<{ data: { ok: boolean; status: number; message: string } }>('/integrations/switch/health');
   }
 
   /**
