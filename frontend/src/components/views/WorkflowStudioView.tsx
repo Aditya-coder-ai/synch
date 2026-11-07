@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import {
   Workflow,
   ArrowRight,
@@ -9,6 +10,7 @@ import {
   Sparkles,
   CheckCircle2,
   Lock,
+  ChevronDown,
 } from 'lucide-react';
 import { Badge } from '../common/Badge';
 
@@ -42,11 +44,11 @@ const templates: WorkflowTemplate[] = [
     suggestedObjective: 'Build and deploy user authentication system with JWT and PostgreSQL audit logs',
     waves: [
       {
-        name: 'Wave 1: Planning & Scope',
+        name: 'Wave 1: Planning & Scope Definition',
         type: 'sequential',
         steps: [
-          { id: 's1', title: 'Parse requirements and schema models', agentRole: 'COORDINATOR', actionType: 'FILE_READ', riskLevel: 'L0' },
-          { id: 's2', title: 'Generate Prisma migration SQL', agentRole: 'DEVELOPER', actionType: 'DATABASE_MIGRATION', riskLevel: 'L3' },
+          { id: 's1', title: 'Parse specifications & schema models', agentRole: 'COORDINATOR', actionType: 'FILE_READ', riskLevel: 'L0' },
+          { id: 's2', title: 'Generate Prisma migration SQL script', agentRole: 'DEVELOPER', actionType: 'DATABASE_MIGRATION', riskLevel: 'L3' },
         ],
       },
       {
@@ -54,21 +56,21 @@ const templates: WorkflowTemplate[] = [
         type: 'parallel',
         steps: [
           { id: 's3', title: 'Synthesize Fastify route handlers & Zod schemas', agentRole: 'DEVELOPER', actionType: 'FILE_CREATE', riskLevel: 'L1' },
-          { id: 's4', title: 'Generate and execute Vitest regression test suite', agentRole: 'QA_ENGINEER', actionType: 'TEST_EXECUTE', riskLevel: 'L1' },
+          { id: 's4', title: 'Execute Vitest automated regression test suite', agentRole: 'QA_ENGINEER', actionType: 'TEST_EXECUTE', riskLevel: 'L1' },
         ],
       },
       {
         name: 'Wave 3: Governance & Security Audit',
         type: 'sequential',
         steps: [
-          { id: 's5', title: 'Audit L0 to L4 security bounds and hash payload', agentRole: 'REVIEWER', actionType: 'APPROVAL_REQUEST', riskLevel: 'L3' },
+          { id: 's5', title: 'Audit L0-L4 security bounds & hash digest', agentRole: 'REVIEWER', actionType: 'APPROVAL_REQUEST', riskLevel: 'L3' },
         ],
       },
       {
-        name: 'Wave 4: Deployment',
+        name: 'Wave 4: Container Build & Deploy',
         type: 'sequential',
         steps: [
-          { id: 's6', title: 'Deploy container image to production registry', agentRole: 'DEVELOPER', actionType: 'DEPLOYMENT', riskLevel: 'L4' },
+          { id: 's6', title: 'Build production image & push registry', agentRole: 'DEVELOPER', actionType: 'DEPLOYMENT', riskLevel: 'L4' },
         ],
       },
     ],
@@ -82,22 +84,22 @@ const templates: WorkflowTemplate[] = [
     suggestedObjective: 'Perform complete L0-L4 permission audit across all workspace modules and OpenCode tools',
     waves: [
       {
-        name: 'Wave 1: Discovery',
+        name: 'Wave 1: Surface Discovery',
         type: 'sequential',
         steps: [
-          { id: 'a1', title: 'Catalog workspace routes and controller boundaries', agentRole: 'COORDINATOR', actionType: 'FILE_READ', riskLevel: 'L0' },
+          { id: 'a1', title: 'Catalog workspace routes & controller boundaries', agentRole: 'COORDINATOR', actionType: 'FILE_READ', riskLevel: 'L0' },
         ],
       },
       {
-        name: 'Wave 2: Policy Verification',
+        name: 'Wave 2: Policy Verification & Fuzzing',
         type: 'parallel',
         steps: [
-          { id: 'a2', title: 'Evaluate path-traversal and boundary protections', agentRole: 'REVIEWER', actionType: 'TEST_EXECUTE', riskLevel: 'L1' },
+          { id: 'a2', title: 'Evaluate path-traversal & sandbox protections', agentRole: 'REVIEWER', actionType: 'TEST_EXECUTE', riskLevel: 'L1' },
           { id: 'a3', title: 'Verify default-deny action classification matrix', agentRole: 'REVIEWER', actionType: 'FILE_READ', riskLevel: 'L0' },
         ],
       },
       {
-        name: 'Wave 3: Report & Persistence',
+        name: 'Wave 3: Cryptographic Report Signing',
         type: 'sequential',
         steps: [
           { id: 'a4', title: 'Commit signed audit report to shared project memory', agentRole: 'REVIEWER', actionType: 'GIT_COMMIT', riskLevel: 'L2' },
@@ -118,85 +120,111 @@ export function WorkflowStudioView({ onSelectTemplateObjective }: WorkflowStudio
   return (
     <div className="space-y-6">
       {/* Header Bar */}
-      <div className="p-5 bg-[var(--color-paper-2)] border border-[var(--color-rule)] rounded-[var(--radius-card)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="p-6 rounded-2xl bg-gradient-to-r from-[#0e1424]/95 via-[#141c32]/85 to-[#0e1424]/95 backdrop-blur-xl border border-[var(--color-rule-2)] shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+      >
         <div>
-          <h2 className="text-base font-medium text-[var(--color-ink)]">Workflow Studio</h2>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-2 h-2 rounded-full bg-[var(--color-accent)] shadow-[0_0_8px_#00f2fe]" />
+            <h2 className="text-base font-semibold text-[var(--color-ink)] tracking-tight">
+              Workflow Orchestration Studio
+            </h2>
+          </div>
           <p className="text-xs text-[var(--color-muted)]">
-            Compose and inspect multi-agent execution graphs, sequential/parallel execution waves, and human governance gates.
+            Compose and inspect topological execution graphs, sequential/parallel execution waves, and human governance gates.
           </p>
         </div>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.96 }}
           type="button"
           onClick={() => onSelectTemplateObjective(selectedTemplate.suggestedObjective)}
-          className="px-3 py-2 text-xs font-medium bg-[var(--color-accent)] text-[var(--color-accent-ink)] rounded-[var(--radius-pill)] hover:opacity-90 transition-opacity flex items-center gap-1.5 self-start sm:self-auto shrink-0"
+          className="px-4 py-2.5 text-xs font-semibold bg-gradient-to-r from-[var(--color-accent)] to-[#38bdf8] text-black rounded-xl hover:shadow-[0_0_20px_rgba(0,242,254,0.4)] transition-all flex items-center gap-2 self-start sm:self-auto shrink-0"
         >
-          <Play className="w-3.5 h-3.5" />
-          Load in Command Center
-        </button>
-      </div>
+          <Play className="w-4 h-4 fill-current" />
+          Load Into Command Center
+        </motion.button>
+      </motion.div>
 
       {/* Template Selector Row */}
-      <div className="flex flex-wrap gap-3">
-        {templates.map((tpl) => (
-          <button
-            key={tpl.id}
-            type="button"
-            onClick={() => setSelectedTemplate(tpl)}
-            className={`p-3 text-left rounded-[var(--radius-card)] border transition-colors flex-1 min-w-[240px] ${
-              selectedTemplate.id === tpl.id
-                ? 'bg-[var(--color-paper-2)] border-[var(--color-accent)]'
-                : 'bg-[var(--color-paper)] border-[var(--color-rule)] hover:border-[var(--color-rule-2)]'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <h4 className="text-xs font-medium text-[var(--color-ink)]">{tpl.name}</h4>
-              <Badge tone={selectedTemplate.id === tpl.id ? 'accent' : 'neutral'}>
-                {tpl.stepsCount} steps
-              </Badge>
-            </div>
-            <p className="text-[11px] text-[var(--color-muted)] mt-1 line-clamp-2">
-              {tpl.description}
-            </p>
-          </button>
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {templates.map((tpl) => {
+          const isSelected = selectedTemplate.id === tpl.id;
+          return (
+            <motion.button
+              key={tpl.id}
+              whileHover={{ y: -2 }}
+              type="button"
+              onClick={() => setSelectedTemplate(tpl)}
+              className={`p-5 text-left rounded-2xl border transition-all ${
+                isSelected
+                  ? 'bg-gradient-to-b from-[#0e1424]/95 to-[#090d16]/95 border-[var(--color-accent)] shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_20px_rgba(0,242,254,0.15)]'
+                  : 'bg-[#0e1424]/60 border-white/10 hover:border-white/20'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-semibold text-[var(--color-ink)] flex items-center gap-2">
+                  <Workflow className="w-4 h-4 text-[var(--color-accent)]" />
+                  {tpl.name}
+                </h4>
+                <Badge tone={isSelected ? 'accent' : 'neutral'}>
+                  {tpl.stepsCount} STEPS · {tpl.wavesCount} WAVES
+                </Badge>
+              </div>
+              <p className="text-xs text-[var(--color-muted)] mt-2 leading-relaxed">
+                {tpl.description}
+              </p>
+            </motion.button>
+          );
+        })}
       </div>
 
       {/* Visual Workflow Canvas / Graph */}
-      <div className="bg-[var(--color-paper-2)] border border-[var(--color-rule)] rounded-[var(--radius-card)] overflow-hidden">
-        <div className="flex items-center justify-between p-4 border-b border-[var(--color-rule)]">
-          <div className="flex items-center gap-2">
-            <GitBranch className="w-4 h-4 text-[var(--color-accent)]" />
-            <h3 className="text-sm font-medium text-[var(--color-ink)]">
-              {selectedTemplate.name}
-            </h3>
-            <span className="text-xs text-[var(--color-muted)] font-mono">
-              ({selectedTemplate.wavesCount} waves · {selectedTemplate.stepsCount} total steps)
-            </span>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl bg-gradient-to-b from-[#0e1424]/90 to-[#090d16]/90 backdrop-blur-2xl border border-white/10 shadow-xl overflow-hidden"
+      >
+        <div className="flex items-center justify-between p-5 border-b border-white/10 bg-[#090d16]/50">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-xl bg-[var(--color-accent-soft)] border border-[var(--color-accent)]/30 flex items-center justify-center text-[var(--color-accent)]">
+              <GitBranch className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-[var(--color-ink)]">
+                {selectedTemplate.name}
+              </h3>
+              <span className="text-xs text-[var(--color-muted)] font-mono">
+                Topological DAG: {selectedTemplate.wavesCount} waves · {selectedTemplate.stepsCount} execution nodes
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 p-1 bg-[#090d16] rounded-xl border border-white/10">
             <button
               type="button"
               onClick={() => setActiveTab('visual')}
-              className={`px-2.5 py-1 text-xs rounded-[var(--radius-pill)] border ${
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
                 activeTab === 'visual'
-                  ? 'bg-[var(--color-paper-3)] border-[var(--color-rule-2)] text-[var(--color-ink)]'
-                  : 'border-transparent text-[var(--color-muted)]'
+                  ? 'bg-[var(--color-accent-soft)] text-[var(--color-accent)] font-semibold border border-[var(--color-accent)]/30 shadow-sm'
+                  : 'text-[var(--color-muted)] hover:text-white'
               }`}
             >
-              Visual waves
+              Visual Waves
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('json')}
-              className={`px-2.5 py-1 text-xs rounded-[var(--radius-pill)] border ${
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
                 activeTab === 'json'
-                  ? 'bg-[var(--color-paper-3)] border-[var(--color-rule-2)] text-[var(--color-ink)]'
-                  : 'border-transparent text-[var(--color-muted)]'
+                  ? 'bg-[var(--color-accent-soft)] text-[var(--color-accent)] font-semibold border border-[var(--color-accent)]/30 shadow-sm'
+                  : 'text-[var(--color-muted)] hover:text-white'
               }`}
             >
-              DAG schema
+              DAG JSON Schema
             </button>
           </div>
         </div>
@@ -206,30 +234,32 @@ export function WorkflowStudioView({ onSelectTemplateObjective }: WorkflowStudio
             <div className="space-y-6">
               {selectedTemplate.waves.map((wave, wIdx) => (
                 <div key={wave.name} className="relative">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xs font-mono font-medium text-[var(--color-accent)]">
+                  <div className="flex items-center gap-2.5 mb-3.5">
+                    <span className="w-2 h-2 rounded-full bg-[var(--color-accent)]" />
+                    <span className="text-xs font-mono font-bold text-[var(--color-accent)] tracking-wide uppercase">
                       {wave.name}
                     </span>
                     <Badge tone={wave.type === 'parallel' ? 'cool' : 'neutral'}>
-                      {wave.type}
+                      {wave.type.toUpperCase()} EXECUTION
                     </Badge>
                   </div>
 
-                  <div className={`grid gap-3 ${wave.type === 'parallel' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
+                  <div className={`grid gap-3.5 ${wave.type === 'parallel' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'}`}>
                     {wave.steps.map((step) => {
                       const isGate = step.riskLevel === 'L3' || step.riskLevel === 'L4';
                       return (
-                        <div
+                        <motion.div
                           key={step.id}
-                          className={`p-3.5 bg-[var(--color-paper)] border rounded-[var(--radius-card)] transition-colors ${
+                          whileHover={{ y: -2 }}
+                          className={`p-4 rounded-xl border transition-all ${
                             isGate
-                              ? 'border-[var(--color-bad)]/60 bg-[var(--color-bad-soft)]/20'
-                              : 'border-[var(--color-rule)]'
+                              ? 'border-[#f43f5e]/40 bg-gradient-to-r from-[#f43f5e]/10 to-[#0e1424]/80 shadow-[0_0_20px_rgba(244,63,94,0.1)]'
+                              : 'border-white/10 bg-[#090d16]/80 hover:border-[var(--color-accent)]/30'
                           }`}
                         >
                           <div className="flex items-center justify-between gap-2 mb-2">
-                            <span className="text-xs font-mono text-[var(--color-muted)]">{step.id}</span>
-                            <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-mono font-bold text-[var(--color-muted)]">{step.id}</span>
+                            <div className="flex items-center gap-2">
                               <Badge tone="cool">{step.agentRole}</Badge>
                               <Badge tone={isGate ? 'bad' : 'neutral'}>
                                 {step.riskLevel}
@@ -237,38 +267,38 @@ export function WorkflowStudioView({ onSelectTemplateObjective }: WorkflowStudio
                             </div>
                           </div>
 
-                          <h5 className="text-xs font-medium text-[var(--color-ink)]">{step.title}</h5>
+                          <h5 className="text-xs font-semibold text-[var(--color-ink)] leading-snug">{step.title}</h5>
 
-                          <div className="mt-3 pt-2 border-t border-[var(--color-rule)] flex items-center justify-between text-[11px] font-mono text-[var(--color-muted)]">
-                            <span>Op: {step.actionType}</span>
+                          <div className="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-between text-[11px] font-mono text-[var(--color-muted)]">
+                            <span>Operation: {step.actionType}</span>
                             {isGate ? (
-                              <span className="text-[var(--color-bad)] flex items-center gap-1">
-                                <Lock className="w-3 h-3" /> human gate
+                              <span className="text-[#fb7185] flex items-center gap-1 font-semibold">
+                                <Lock className="w-3.5 h-3.5" /> HUMAN APPROVAL GATE
                               </span>
                             ) : (
-                              <span className="text-[var(--color-ok)]">autonomous</span>
+                              <span className="text-[var(--color-ok)] font-medium">AUTONOMOUS</span>
                             )}
                           </div>
-                        </div>
+                        </motion.div>
                       );
                     })}
                   </div>
 
                   {wIdx < selectedTemplate.waves.length - 1 && (
-                    <div className="flex justify-center my-3">
-                      <div className="w-0.5 h-6 bg-[var(--color-rule)]" />
+                    <div className="flex justify-center my-4">
+                      <div className="w-[2px] h-8 bg-gradient-to-b from-[var(--color-accent)] to-transparent" />
                     </div>
                   )}
                 </div>
               ))}
             </div>
           ) : (
-            <pre className="p-4 bg-[var(--color-paper-3)] border border-[var(--color-rule)] rounded-[var(--radius-card)] font-mono text-xs text-[var(--color-ink-2)] overflow-x-auto max-h-96">
+            <pre className="p-5 bg-[#060911] border border-white/10 rounded-xl font-mono text-xs text-[var(--color-ink-2)] overflow-x-auto max-h-96">
               {JSON.stringify(selectedTemplate, null, 2)}
             </pre>
           )}
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

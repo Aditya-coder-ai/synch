@@ -1,123 +1,109 @@
-/* Hallmark · shape: app screen · genre: modern-minimal · theme: Rim · redesign: full
- * posture: committed · axes: dark/grotesk-sans/warm · contrast: pass · fold: pass · v2.1.0 */
-/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 · weakest: none, Scandinavian minimalist high-contrast dark room */
 @import url("./tokens.css");
 @import url("./base.css");
 
 /* --------------------------------------------------------------------------
-   App Shell & Shared Layout
+   App Shell & Futuristic Background with Ambient Mesh
    -------------------------------------------------------------------------- */
 .app-shell {
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
   background-color: var(--color-paper);
+  background-image: 
+    radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(14, 20, 36, 0.4) 0%, transparent 80%);
   color: var(--color-ink);
+  overflow: hidden;
 }
 
-.container {
-  width: 100%;
-  max-width: var(--container);
-  margin-inline: auto;
-  padding-inline: var(--gutter);
-  box-sizing: border-box;
+/* Futuristic Glass Card */
+.glass-panel {
+  background: var(--color-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: var(--rule-hair) solid var(--color-glass-border);
+  box-shadow: var(--shadow-card);
+  transition: all var(--dur-short) var(--ease-out);
 }
 
-/* --------------------------------------------------------------------------
-   Buttons & Interactive Controls
-   -------------------------------------------------------------------------- */
-.button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-xs);
-  min-height: 40px;
-  padding-inline: var(--space-md);
-  border-radius: var(--radius-pill);
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  line-height: 1;
-  text-decoration: none;
-  cursor: pointer;
-  border: var(--rule-hair) solid var(--color-rule-2);
-  background-color: var(--color-paper-2);
-  color: var(--color-ink);
-  transition: background-color var(--dur-short) var(--ease-out),
-              border-color var(--dur-short) var(--ease-out),
-              color var(--dur-short) var(--ease-out);
+.glass-panel:hover {
+  border-color: var(--color-rule-glow);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), var(--shadow-glow-cyan);
 }
 
-.button:hover {
-  background-color: var(--color-paper-3);
-  border-color: var(--color-ink-2);
+/* Neon Pulse Indicator */
+@keyframes neon-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: drop-shadow(0 0 6px var(--color-accent));
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 14px var(--color-accent));
+  }
 }
 
-.button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
+.neon-pulse-dot {
+  animation: neon-pulse 2s infinite ease-in-out;
+}
+
+/* Cyber Scanning Line */
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(1000%); }
+}
+
+.scanline-overlay {
+  position: relative;
+  overflow: hidden;
+}
+
+.scanline-overlay::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+  opacity: 0.25;
+  animation: scanline 6s linear infinite;
   pointer-events: none;
 }
 
-.button-primary {
-  background-color: var(--color-accent);
-  border-color: var(--color-accent);
+/* Futuristic Shimmer Button */
+.button-shimmer {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--color-accent), #38bdf8);
   color: var(--color-accent-ink);
-}
-
-.button-primary:hover {
-  background-color: color-mix(in oklab, var(--color-accent) 85%, var(--color-ink));
-  border-color: color-mix(in oklab, var(--color-accent) 85%, var(--color-ink));
-  color: var(--color-accent-ink);
-}
-
-.button-outline {
-  background-color: transparent;
-  border-color: var(--color-rule-2);
-  color: var(--color-ink);
-}
-
-.button-outline:hover {
-  background-color: var(--color-paper-2);
-  border-color: var(--color-ink-2);
-}
-
-.button-small {
-  min-height: 32px;
-  padding-inline: var(--space-sm);
-  font-size: var(--text-xs);
-}
-
-/* --------------------------------------------------------------------------
-   Toast Notice
-   -------------------------------------------------------------------------- */
-.toast {
-  position: fixed;
-  bottom: 80px;
-  right: var(--gutter);
-  z-index: var(--z-toast);
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  padding: var(--space-xs) var(--space-md);
-  border-radius: var(--radius-pill);
-  border: var(--rule-hair) solid var(--color-rule-2);
-  background-color: var(--color-paper-2);
-  color: var(--color-ink);
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-}
-
-.toast button {
-  background: transparent;
+  font-weight: 600;
   border: none;
-  color: var(--color-muted);
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
+  box-shadow: 0 0 16px rgba(0, 242, 254, 0.35);
+  transition: transform var(--dur-short) var(--ease-spring), box-shadow var(--dur-short) var(--ease-out);
 }
 
-.toast button:hover {
-  color: var(--color-ink);
+.button-shimmer:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 0 24px rgba(0, 242, 254, 0.6);
+}
+
+.button-shimmer:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Futuristic Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(14, 20, 36, 0.4);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(56, 189, 248, 0.25);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 242, 254, 0.6);
 }

@@ -1,54 +1,86 @@
 :root {
   color-scheme: dark;
+
+  /* Spatial scale */
   --space-3xs: 2px; --space-2xs: 4px; --space-xs: 8px; --space-sm: 12px; --space-md: 16px; --space-lg: 24px; --space-xl: 40px; --space-2xl: 64px; --space-3xl: 96px; --space-4xl: 144px;
-  --text-xs: 0.8125rem; --text-sm: 0.875rem; --text-md: 1rem; --text-lg: 1.25rem; --text-xl: 1.5625rem; --text-2xl: 1.953rem; --text-3xl: 2.441rem;
-  --text-display-s: clamp(2.25rem, 4vw + 0.5rem, 3.75rem); --text-display: clamp(2.75rem, 5vw + 1rem, 5.25rem);
-  --text-section: clamp(2rem, 2.5vw + 1rem, 3.5rem); --text-title: clamp(1.25rem, 0.75vw + 0.875rem, 1.625rem); --text-lead: clamp(1.125rem, 0.35vw + 1rem, 1.375rem);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); --ease-in: cubic-bezier(0.7, 0, 0.84, 0); --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --dur-micro: 120ms; --dur-short: 220ms; --dur-long: 420ms;
-  --color-error: oklch(70% 0.17 25); --color-success: oklch(76% 0.15 150);
-  --container: 1440px; --gutter: 64px; --gap-columns: 32px; --section-gap-s: 120px; --section-gap: 144px; --section-gap-l: 176px;
-  --z-base: 1; --z-raised: 10; --z-dropdown: 100; --z-sticky: 200; --z-sticky-nav: 300; --z-modal: 400; --z-toast: 500; --z-tooltip: 600;
 
-  /* High-Contrast Dark Room Paper (Rim night theme) */
-  --color-paper: oklch(9% 0.008 75);
-  --color-paper-2: oklch(12.5% 0.009 75);
-  --color-paper-3: oklch(6.5% 0.007 75);
+  /* Type scale */
+  --text-xs: 0.75rem; --text-sm: 0.8125rem; --text-md: 0.9375rem; --text-lg: 1.125rem; --text-xl: 1.375rem; --text-2xl: 1.75rem; --text-3xl: 2.25rem;
 
-  /* Warm Off-White Ink */
-  --color-ink: oklch(94% 0.010 80);
-  --color-ink-2: oklch(84% 0.011 80);
-  --color-muted: oklch(68% 0.012 80);
-  --color-muted-2: oklch(50% 0.010 80);
+  /* Easing curves (Flutter spring & physics inspired) */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
-  /* Precision Hairlines */
-  --color-rule: oklch(25% 0.010 78);
-  --color-rule-2: oklch(16% 0.009 78);
+  /* Duration */
+  --dur-micro: 100ms; --dur-short: 200ms; --dur-med: 350ms; --dur-long: 500ms;
 
-  /* Nordic Signal Orange and Sky-Blue */
-  --color-accent: oklch(72% 0.17 45);
-  --color-accent-ink: oklch(10% 0.02 45);
-  --color-accent-soft: oklch(18% 0.04 45);
-  --color-focus: oklch(78% 0.15 45);
-  --color-cool: oklch(74% 0.12 250);
-  --color-cool-soft: oklch(18% 0.03 250);
+  /* Container */
+  --container: 1440px; --gutter: 48px; --gap-columns: 24px;
+  --z-base: 1; --z-raised: 10; --z-dropdown: 100; --z-sticky: 200; --z-modal: 400; --z-toast: 500;
 
-  /* Semantic status */
-  --color-ok: oklch(76% 0.15 150);
-  --color-ok-soft: oklch(18% 0.03 150);
-  --color-bad: oklch(70% 0.17 25);
-  --color-bad-soft: oklch(18% 0.035 25);
+  /* ── Futuristic Cyber-SaaS Dark Theme ── */
 
-  /* Typography: Switzer & Geist Mono */
-  --font-display: "Switzer", "Host Grotesk", ui-sans-serif, system-ui, sans-serif;
+  /* Deep space navy-slate */
+  --color-paper: #090d16;
+  --color-paper-2: #0e1424;
+  --color-paper-3: #141c32;
+
+  /* Glassmorphism */
+  --color-glass: rgba(14, 20, 36, 0.65);
+  --color-glass-border: rgba(56, 189, 248, 0.18);
+  --color-glass-hover: rgba(20, 28, 50, 0.75);
+
+  /* Text & Inks */
+  --color-ink: #f0f6fc;
+  --color-ink-2: #c9d1d9;
+  --color-muted: #8b949e;
+  --color-muted-2: #484f58;
+
+  /* Borders & Hairlines */
+  --color-rule: rgba(255, 255, 255, 0.08);
+  --color-rule-2: rgba(56, 189, 248, 0.22);
+  --color-rule-glow: rgba(0, 242, 254, 0.35);
+
+  /* Neon Primary Accent: Electric Cyan */
+  --color-accent: #00f2fe;
+  --color-accent-ink: #04121a;
+  --color-accent-soft: rgba(0, 242, 254, 0.12);
+  --color-accent-glow: rgba(0, 242, 254, 0.3);
+  --color-focus: #38bdf8;
+
+  /* Neon Secondary Accent: Holographic Violet */
+  --color-cool: #a855f7;
+  --color-cool-soft: rgba(168, 85, 247, 0.14);
+  --color-cool-glow: rgba(168, 85, 247, 0.35);
+
+  /* Semantic status colors with neon bloom */
+  --color-ok: #10b981;
+  --color-ok-soft: rgba(16, 185, 129, 0.14);
+  --color-bad: #f43f5e;
+  --color-bad-soft: rgba(244, 63, 94, 0.14);
+  --color-warn: #f59e0b;
+  --color-warn-soft: rgba(245, 158, 11, 0.14);
+
+  /* Typography */
+  --font-display: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-body: var(--font-display);
-  --font-outlier: "Geist Mono", "Atkinson Hyperlegible Mono", ui-monospace, monospace;
+  --font-mono: "JetBrains Mono", "SF Mono", Consolas, monospace;
+  --font-outlier: var(--font-mono);
 
-  /* Zero Radius Precision: square surfaces parted by hairlines */
-  --radius-card: 0px;
-  --radius-pill: 0px;
+  /* Geometry - Sleek Modern Curved Shapes */
+  --radius-card: 14px;
+  --radius-pill: 9999px;
+  --radius-sm: 8px;
   --rule-hair: 1px;
-  --shadow-card: none;
-  --tracking-display: -0.04em;
-  --display-weight: 500;
+
+  /* Futuristic Neon Glows & Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --shadow-glow-cyan: 0 0 25px rgba(0, 242, 254, 0.25), 0 0 50px rgba(0, 242, 254, 0.1);
+  --shadow-glow-purple: 0 0 25px rgba(168, 85, 247, 0.25), 0 0 50px rgba(168, 85, 247, 0.1);
+
+  --tracking-display: -0.025em;
+  --display-weight: 600;
 }
