@@ -115,7 +115,7 @@ export function AgentStudioView() {
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 bg-[var(--color-paper-2)] border border-[var(--color-rule)] rounded-[var(--radius-card)]">
         <div>
-          <h2 className="text-base font-semibold text-[var(--color-ink)]">Agent Studio</h2>
+          <h2 className="text-base font-medium text-[var(--color-ink)]">Agent Studio</h2>
           <p className="text-xs text-[var(--color-muted)]">
             Configure agent fleet roles, runtime tool permissions, and autonomy risk boundaries.
           </p>
@@ -135,7 +135,7 @@ export function AgentStudioView() {
       {isConfiguring && (
         <div className="p-5 bg-[var(--color-paper-2)] border border-[var(--color-accent)] rounded-[var(--radius-card)]">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-[var(--color-ink)]">Register new autonomous agent</h3>
+            <h3 className="text-sm font-medium text-[var(--color-ink)]">Register new autonomous agent</h3>
             <button
               type="button"
               onClick={() => setIsConfiguring(false)}
@@ -258,7 +258,7 @@ export function AgentStudioView() {
                       <Users2 className="w-4 h-4" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-[var(--color-ink)]">{agent.name}</h4>
+                      <h4 className="text-sm font-medium text-[var(--color-ink)]">{agent.name}</h4>
                       <span className="text-[11px] font-mono text-[var(--color-muted)]">
                         {agent.role} · Risk ceiling: {agent.maxRiskLevel}
                       </span>
@@ -323,7 +323,7 @@ export function AgentStudioView() {
             <>
               <div className="pb-3 border-b border-[var(--color-rule)]">
                 <span className="text-[11px] font-mono text-[var(--color-muted)]">agent inspector</span>
-                <h3 className="text-base font-semibold text-[var(--color-ink)] mt-0.5">
+                <h3 className="text-base font-medium text-[var(--color-ink)] mt-0.5">
                   {selectedAgent.name}
                 </h3>
                 <p className="text-xs text-[var(--color-muted)] mt-1">{selectedAgent.description}</p>

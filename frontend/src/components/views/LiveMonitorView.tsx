@@ -70,7 +70,7 @@ export function LiveMonitorView({
       {/* Header Bar */}
       <div className="p-5 bg-[var(--color-paper-2)] border border-[var(--color-rule)] rounded-[var(--radius-card)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-base font-semibold text-[var(--color-ink)]">Live Monitor</h2>
+          <h2 className="text-base font-medium text-[var(--color-ink)]">Live Monitor</h2>
           <p className="text-xs text-[var(--color-muted)]">
             Continuous Server-Sent Events (SSE) telemetry feed. Real-time stdout, stderr, agent state transitions, and tool calls.
           </p>
@@ -78,7 +78,7 @@ export function LiveMonitorView({
 
         <div className="flex items-center gap-2">
           <Badge tone={isStreaming ? 'accent' : 'neutral'} className="flex items-center gap-1.5">
-            <Radio className={`w-3 h-3 ${isStreaming ? 'animate-pulse text-[var(--color-accent)]' : ''}`} />
+            <Radio className={`w-3 h-3 ${isStreaming ? 'text-[var(--color-accent)]' : ''}`} />
             {isStreaming ? 'SSE stream connected' : 'stream idle'}
           </Badge>
 
@@ -103,7 +103,7 @@ export function LiveMonitorView({
               <span className="text-[11px] font-mono text-[var(--color-muted)]">
                 Active orchestration: {currentOrchestration.orchestrationId}
               </span>
-              <h3 className="text-sm font-semibold text-[var(--color-ink)] mt-0.5">
+              <h3 className="text-sm font-medium text-[var(--color-ink)] mt-0.5">
                 {currentOrchestration.objective}
               </h3>
             </div>
@@ -246,7 +246,7 @@ export function LiveMonitorView({
                         : isOut
                         ? 'text-[var(--color-accent)] bg-[var(--color-accent-soft)]'
                         : isAppr
-                        ? 'text-[var(--color-bad)] bg-[var(--color-bad-soft)] font-bold'
+                        ? 'text-[var(--color-bad)] bg-[var(--color-bad-soft)] font-medium'
                         : 'text-[var(--color-cool)] bg-[var(--color-cool-soft)]'
                     }`}
                   >

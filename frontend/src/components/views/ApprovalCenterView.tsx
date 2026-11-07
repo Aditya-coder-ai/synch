@@ -74,7 +74,7 @@ export function ApprovalCenterView({
       {/* Header Bar */}
       <div className="p-5 bg-[var(--color-paper-2)] border border-[var(--color-rule)] rounded-[var(--radius-card)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-base font-semibold text-[var(--color-ink)]">Approval Center</h2>
+          <h2 className="text-base font-medium text-[var(--color-ink)]">Approval Center</h2>
           <p className="text-xs text-[var(--color-muted)]">
             Human-controlled autonomy governance. Sensitive operations (L2 to L4) are held until authorized by human sign-off.
           </p>
@@ -134,7 +134,7 @@ export function ApprovalCenterView({
                     <div className="flex items-center gap-2">
                       <Badge tone={getRiskTone(item.riskLevel)}>{item.riskLevel}</Badge>
                       <span className="text-xs font-mono text-[var(--color-muted)]">{item.actionCategory}</span>
-                      <span className="text-xs font-mono text-[var(--color-ink)] font-semibold truncate max-w-sm">
+                      <span className="text-xs font-mono text-[var(--color-ink)] font-medium truncate max-w-sm">
                         {item.actionType}
                       </span>
                     </div>
@@ -220,7 +220,7 @@ export function ApprovalCenterView({
             <>
               <div className="pb-3 border-b border-[var(--color-rule)]">
                 <span className="text-[11px] font-mono text-[var(--color-muted)]">governance inspector</span>
-                <h3 className="text-sm font-semibold text-[var(--color-ink)] mt-0.5">
+                <h3 className="text-sm font-medium text-[var(--color-ink)] mt-0.5">
                   Approval Request {selectedApproval.id}
                 </h3>
               </div>

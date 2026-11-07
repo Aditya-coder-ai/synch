@@ -98,7 +98,7 @@ export function MemoryHubView({ memories, onRefreshMemories }: MemoryHubViewProp
       {/* Header Bar */}
       <div className="p-5 bg-[var(--color-paper-2)] border border-[var(--color-rule)] rounded-[var(--radius-card)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-base font-semibold text-[var(--color-ink)]">Memory Hub</h2>
+          <h2 className="text-base font-medium text-[var(--color-ink)]">Memory Hub</h2>
           <p className="text-xs text-[var(--color-muted)]">
             Shared cross-session intelligence store. Agents retrieve conventions, past decisions, and lessons before task planning.
           </p>
@@ -118,7 +118,7 @@ export function MemoryHubView({ memories, onRefreshMemories }: MemoryHubViewProp
       {isCreating && (
         <div className="p-5 bg-[var(--color-paper-2)] border border-[var(--color-accent)] rounded-[var(--radius-card)]">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-[var(--color-ink)]">Add shared memory record</h3>
+            <h3 className="text-sm font-medium text-[var(--color-ink)]">Add shared memory record</h3>
             <button
               type="button"
               onClick={() => setIsCreating(false)}
@@ -250,7 +250,7 @@ export function MemoryHubView({ memories, onRefreshMemories }: MemoryHubViewProp
                           {m.createdAt ? m.createdAt.slice(0, 10) : 'recent'}
                         </span>
                       </div>
-                      <h4 className="text-xs font-semibold text-[var(--color-ink)] mt-1.5">
+                      <h4 className="text-xs font-medium text-[var(--color-ink)] mt-1.5">
                         {m.title}
                       </h4>
                     </div>
@@ -272,7 +272,7 @@ export function MemoryHubView({ memories, onRefreshMemories }: MemoryHubViewProp
         <div className="p-5 bg-[var(--color-paper-2)] border border-[var(--color-rule)] rounded-[var(--radius-card)] h-fit space-y-4">
           <div className="pb-3 border-b border-[var(--color-rule)]">
             <span className="text-[11px] font-mono text-[var(--color-muted)]">context synthesis</span>
-            <h3 className="text-sm font-semibold text-[var(--color-ink)] mt-0.5">
+            <h3 className="text-sm font-medium text-[var(--color-ink)] mt-0.5">
               Live Context Builder
             </h3>
             <p className="text-xs text-[var(--color-muted)] mt-1">

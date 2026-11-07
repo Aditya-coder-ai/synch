@@ -24,7 +24,7 @@ export function EmptyState({
       className={`flex flex-col items-center justify-center p-8 text-center border border-dashed border-[var(--color-rule)] rounded-[var(--radius-card)] bg-[var(--color-paper-2)] ${className}`}
     >
       {Icon && (
-        <div className="p-3 mb-3 rounded-full bg-[var(--color-paper-3)] text-[var(--color-muted)]">
+        <div className="p-3 mb-3 bg-[var(--color-paper-3)] text-[var(--color-muted)]">
           <Icon className="w-5 h-5" />
         </div>
       )}

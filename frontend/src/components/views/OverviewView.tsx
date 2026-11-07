@@ -62,7 +62,7 @@ export function OverviewView({
       <div className="p-6 bg-[var(--color-paper-2)] border border-[var(--color-rule)] rounded-[var(--radius-card)] flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <span className="text-xs text-[var(--color-muted)] font-mono">workspace / proj-default</span>
-          <h2 className="text-xl font-semibold text-[var(--color-ink)] mt-1">
+          <h2 className="text-xl font-medium text-[var(--color-ink)] mt-1">
             Welcome back, Operator Admin
           </h2>
           <p className="text-xs text-[var(--color-muted)] mt-1 max-w-xl">
@@ -179,7 +179,7 @@ export function OverviewView({
         {/* System Integrations Status */}
         <div className="p-5 bg-[var(--color-paper-2)] border border-[var(--color-rule)] rounded-[var(--radius-card)]">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-[var(--color-ink)]">System integrations</h3>
+            <h3 className="text-sm font-medium text-[var(--color-ink)]">System integrations</h3>
             <button
               type="button"
               onClick={() => onNavigate('integrations')}
@@ -238,7 +238,7 @@ export function OverviewView({
         {/* Agent Fleet Overview */}
         <div className="p-5 bg-[var(--color-paper-2)] border border-[var(--color-rule)] rounded-[var(--radius-card)]">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-[var(--color-ink)]">Agent fleet</h3>
+            <h3 className="text-sm font-medium text-[var(--color-ink)]">Agent fleet</h3>
             <button
               type="button"
               onClick={() => onNavigate('agents')}
@@ -268,7 +268,7 @@ export function OverviewView({
       {/* Recent Execution Session */}
       <div className="p-5 bg-[var(--color-paper-2)] border border-[var(--color-rule)] rounded-[var(--radius-card)]">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-[var(--color-ink)]">Recent orchestration</h3>
+          <h3 className="text-sm font-medium text-[var(--color-ink)]">Recent orchestration</h3>
           <button
             type="button"
             onClick={() => onNavigate('monitor')}

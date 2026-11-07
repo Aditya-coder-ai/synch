@@ -56,11 +56,11 @@ export function Sidebar({
     <aside className="w-64 shrink-0 bg-[var(--color-paper-2)] border-r border-[var(--color-rule)] flex flex-col justify-between select-none">
       <div className="p-4">
         <div className="flex items-center gap-3 px-2 py-3 mb-4 border-b border-[var(--color-rule)]">
-          <div className="w-7 h-7 rounded-[var(--radius-pill)] bg-[var(--color-accent)] flex items-center justify-center text-[var(--color-accent-ink)] font-bold text-sm">
+          <div className="w-7 h-7 rounded-[var(--radius-pill)] bg-[var(--color-accent)] flex items-center justify-center text-[var(--color-accent-ink)] font-medium text-sm">
             CF
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-semibold tracking-tight text-[var(--color-ink)]">CrewFlow</span>
+            <span className="text-sm font-medium tracking-tight text-[var(--color-ink)]">CrewFlow</span>
             <span className="text-xs text-[var(--color-muted)] font-mono">Agent OS v1.2</span>
           </div>
         </div>

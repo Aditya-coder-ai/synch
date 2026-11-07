@@ -88,7 +88,7 @@ export function IntegrationsHubView({
       {/* Header Bar */}
       <div className="p-5 bg-[var(--color-paper-2)] border border-[var(--color-rule)] rounded-[var(--radius-card)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-base font-semibold text-[var(--color-ink)]">Integrations Hub</h2>
+          <h2 className="text-base font-medium text-[var(--color-ink)]">Integrations Hub</h2>
           <p className="text-xs text-[var(--color-muted)]">
             Active connections to OpenCode sandbox runtimes, Switch Agent Protocol, and PostgreSQL database.
           </p>
@@ -100,7 +100,7 @@ export function IntegrationsHubView({
           disabled={isProbing || isLoading}
           className="px-3 py-2 text-xs font-medium bg-[var(--color-accent)] text-[var(--color-accent-ink)] rounded-[var(--radius-pill)] hover:opacity-90 transition-opacity flex items-center gap-1.5 self-start sm:self-auto shrink-0 disabled:opacity-50"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${isProbing ? 'animate-spin' : ''}`} />
+          <RefreshCw className="w-3.5 h-3.5" />
           {isProbing ? 'Running diagnostics...' : 'Run connectivity probe'}
         </button>
       </div>
@@ -115,7 +115,7 @@ export function IntegrationsHubView({
                 <Cpu className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-[var(--color-ink)]">OpenCode Runtime</h3>
+                <h3 className="text-sm font-medium text-[var(--color-ink)]">OpenCode Runtime</h3>
                 <span className="text-[11px] font-mono text-[var(--color-muted)]">sandbox engine</span>
               </div>
             </div>
@@ -166,7 +166,7 @@ export function IntegrationsHubView({
                 <Radio className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-[var(--color-ink)]">Switch Protocol</h3>
+                <h3 className="text-sm font-medium text-[var(--color-ink)]">Switch Protocol</h3>
                 <span className="text-[11px] font-mono text-[var(--color-muted)]">collaboration room</span>
               </div>
             </div>
@@ -219,7 +219,7 @@ export function IntegrationsHubView({
                 <Database className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-[var(--color-ink)]">PostgreSQL & API</h3>
+                <h3 className="text-sm font-medium text-[var(--color-ink)]">PostgreSQL & API</h3>
                 <span className="text-[11px] font-mono text-[var(--color-muted)]">persistence layer</span>
               </div>
             </div>

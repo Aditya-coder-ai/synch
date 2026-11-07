@@ -36,7 +36,7 @@ export function Header({
   return (
     <header className="h-14 border-b border-[var(--color-rule)] bg-[var(--color-paper-2)] px-6 flex items-center justify-between select-none">
       <div className="flex items-center gap-4">
-        <h1 className="text-base font-semibold text-[var(--color-ink)]">{currentViewTitle}</h1>
+        <h1 className="text-base font-medium text-[var(--color-ink)]">{currentViewTitle}</h1>
         <span className="text-xs text-[var(--color-muted)] font-mono">
           workspace / proj-default
         </span>
@@ -82,7 +82,7 @@ export function Header({
           title="Refresh workspace telemetry"
           className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-paper-3)] border border-[var(--color-rule)] transition-colors disabled:opacity-50"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+          <RefreshCw className="w-3.5 h-3.5" />
         </button>
 
         <div className="flex items-center gap-2 pl-2 border-l border-[var(--color-rule)]">

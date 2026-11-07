@@ -120,7 +120,7 @@ export function WorkflowStudioView({ onSelectTemplateObjective }: WorkflowStudio
       {/* Header Bar */}
       <div className="p-5 bg-[var(--color-paper-2)] border border-[var(--color-rule)] rounded-[var(--radius-card)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-base font-semibold text-[var(--color-ink)]">Workflow Studio</h2>
+          <h2 className="text-base font-medium text-[var(--color-ink)]">Workflow Studio</h2>
           <p className="text-xs text-[var(--color-muted)]">
             Compose and inspect multi-agent execution graphs, sequential/parallel execution waves, and human governance gates.
           </p>
@@ -150,7 +150,7 @@ export function WorkflowStudioView({ onSelectTemplateObjective }: WorkflowStudio
             }`}
           >
             <div className="flex items-center justify-between">
-              <h4 className="text-xs font-semibold text-[var(--color-ink)]">{tpl.name}</h4>
+              <h4 className="text-xs font-medium text-[var(--color-ink)]">{tpl.name}</h4>
               <Badge tone={selectedTemplate.id === tpl.id ? 'accent' : 'neutral'}>
                 {tpl.stepsCount} steps
               </Badge>
@@ -167,7 +167,7 @@ export function WorkflowStudioView({ onSelectTemplateObjective }: WorkflowStudio
         <div className="flex items-center justify-between p-4 border-b border-[var(--color-rule)]">
           <div className="flex items-center gap-2">
             <GitBranch className="w-4 h-4 text-[var(--color-accent)]" />
-            <h3 className="text-sm font-semibold text-[var(--color-ink)]">
+            <h3 className="text-sm font-medium text-[var(--color-ink)]">
               {selectedTemplate.name}
             </h3>
             <span className="text-xs text-[var(--color-muted)] font-mono">

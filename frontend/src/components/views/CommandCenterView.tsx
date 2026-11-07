@@ -65,7 +65,7 @@ export function CommandCenterView({
       {/* Task Input Section */}
       <div className="p-5 bg-[var(--color-paper-2)] border border-[var(--color-rule)] rounded-[var(--radius-card)]">
         <div className="mb-3">
-          <h2 className="text-base font-semibold text-[var(--color-ink)]">Command Center</h2>
+          <h2 className="text-base font-medium text-[var(--color-ink)]">Command Center</h2>
           <p className="text-xs text-[var(--color-muted)]">
             State your operational objective in natural language. Coordinator will decompose the goal, allocate specialized agents, and manage execution.
           </p>
@@ -129,7 +129,7 @@ export function CommandCenterView({
             >
               {isExecuting ? (
                 <>
-                  <Activity className="w-3.5 h-3.5 animate-spin" />
+                  <Activity className="w-3.5 h-3.5" />
                   <span>Running…</span>
                 </>
               ) : (
@@ -226,7 +226,7 @@ export function CommandCenterView({
             >
               Live stream ({streamLogs.length})
               {isStreaming && (
-                <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] animate-ping" />
+                <span className="w-1.5 h-1.5 bg-[var(--color-accent)]" />
               )}
             </button>
             <button

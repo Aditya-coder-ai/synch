@@ -41,7 +41,7 @@ export function StatCard({
         {Icon && <Icon className="w-4 h-4 text-[var(--color-muted)] shrink-0" />}
       </div>
       <div className="flex items-baseline gap-2">
-        <span className={`text-2xl font-mono font-medium ${toneValueClasses[tone]}`}>
+        <span className={`text-2xl font-mono font-medium tabular-nums ${toneValueClasses[tone]}`}>
           {value}
         </span>
         {subtext && (
